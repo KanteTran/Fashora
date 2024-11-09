@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: postgres_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgresql:/postgresql  # Mount the directory with the SQL file
+      - ./init.sh:/docker-entrypoint-initdb.d/init.sh  # Mount the init script
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - my_network
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        chmod +x /docker-entrypoint-initdb.d/init.sh && /docker-entrypoint-initdb.d/init.sh
+
+
+  ceph:
+    image: ceph/demo
+    container_name: ceph-s3
+    environment:
+      CEPH_DEMO_UID: "admin"
+      CEPH_DEMO_ACCESS_KEY: "access_key"
+      CEPH_DEMO_SECRET_KEY: "secret_key"
+      NETWORK_AUTO_DETECT: "4"
+    ports:
+      - "7480:7480"  # Port for S3 (using RADOS Gateway)
+      - "6789:6789"  # Ceph monitor
+    volumes:
+      - ceph_data:/var/lib/ceph
+    networks:
+      - my_network
+    command: demo
+
+networks:
+  my_network:
+
+volumes:
+  postgres_data:
+  ceph_data:
