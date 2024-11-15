@@ -1,4 +1,4 @@
-module login-system
+module fashora-backend
 
 go 1.18
 

@@ -1,29 +1,30 @@
 package main
 
 import (
+	"fashora-backend/config"
+	"fashora-backend/controllers/auth_controller"
+	"fashora-backend/controllers/user_controller"
+	"fashora-backend/middlewares"
+	"fashora-backend/models"
+
 	"github.com/gin-gonic/gin"
-	"login-system/controllers"
-	"login-system/middlewares"
-	"login-system/models"
-	"login-system/utils"
 )
 
 func main() {
 	r := gin.Default()
-	utils.LoadConfig()
+	config.LoadConfig()
 
 	// Kết nối database
 	models.ConnectDatabase()
 
 	// Routes
-	r.POST("/user/register", controllers.Register)
-	r.POST("/user/update_user", controllers.Update)
-	r.POST("/user/login", controllers.Login)
+	r.POST("/auth/register", auth_controller.Register)
+	r.POST("/auth/login", auth_controller.Login)
 
-	protected := r.Group("/user")
+	protected := r.Group("/")
 	protected.Use(middlewares.AuthMiddleware())
 	{
-		protected.PUT("/user/update_user", controllers.Update) // Route update người dùng
+		protected.PATCH("/user/update_user", user_controller.UpdateUser) // Route update người dùng
 	}
 
 	r.Run(":8080")
