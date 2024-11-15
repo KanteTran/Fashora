@@ -1,6 +1,7 @@
 package user_controller
 
 import (
+	"errors"
 	"fashora-backend/services/user_service"
 	"net/http"
 	"time"
@@ -27,7 +28,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	if err := user_service.UpdateUserByPhoneNumber(user_service.UserUpdateInfo(input)); err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not exist"})
 		}
 	}

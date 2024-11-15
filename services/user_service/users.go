@@ -3,6 +3,7 @@ package user_service
 import (
 	"errors"
 	"fashora-backend/models"
+	"gorm.io/gorm"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,6 +20,13 @@ func GetUserByPhoneNumber(phoneNumber string) (*models.User, error) {
 }
 
 func CreateNewUser(userInfo UserRegisterInfo) (*models.User, error) {
+	var existingUser models.User
+	if err := models.DB.Where("phone_id = ?", userInfo.PhoneNumber).First(&existingUser).Error; err == nil {
+		return nil, errors.New("user already exists")
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("failed to check user existence")
+	}
+
 	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInfo.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -36,7 +44,6 @@ func CreateNewUser(userInfo UserRegisterInfo) (*models.User, error) {
 		Gender:       userInfo.Gender,
 	}
 
-	// Save the user to the database
 	result := models.DB.Create(&user)
 	if result.Error != nil {
 		return nil, result.Error

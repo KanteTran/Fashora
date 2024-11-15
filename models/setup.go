@@ -28,6 +28,9 @@ func ConnectDatabase() {
 		log.Fatal("Failed to connect to the database:", err)
 	}
 
-	database.AutoMigrate(&User{})
+	err = database.AutoMigrate(&User{})
+	if err != nil {
+		return
+	}
 	DB = database
 }

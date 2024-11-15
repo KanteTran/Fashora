@@ -3,6 +3,7 @@ package auth_controller
 import (
 	"fashora-backend/services/auth_service"
 	"fashora-backend/services/user_service"
+	"fashora-backend/utils"
 	"net/http"
 	"time"
 
@@ -25,6 +26,15 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
+	if input.PhoneNumber == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Phone number is required"})
+		return
+	}
+
+	if !utils.ValidatePhoneNumber(input.PhoneNumber) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Phone number is wrong"})
+		return
+	}
 
 	userWithToken, err := auth_service.Register(user_service.UserRegisterInfo(input))
 
@@ -38,7 +48,6 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// Return the new token to the client
 	c.JSON(http.StatusCreated, gin.H{
 		"token": userWithToken.Token,
 		"user":  userWithToken.User,

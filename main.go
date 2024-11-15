@@ -14,7 +14,6 @@ func main() {
 	r := gin.Default()
 	config.LoadConfig()
 
-	// Kết nối database
 	models.ConnectDatabase()
 
 	// Routes
@@ -24,8 +23,11 @@ func main() {
 	protected := r.Group("/")
 	protected.Use(middlewares.AuthMiddleware())
 	{
-		protected.PATCH("/user/update_user", user_controller.UpdateUser) // Route update người dùng
+		protected.PATCH("/user/update_user", user_controller.UpdateUser)
 	}
 
-	r.Run(":8080")
+	err := r.Run(":8080")
+	if err != nil {
+		return
+	}
 }

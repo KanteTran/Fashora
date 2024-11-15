@@ -18,7 +18,7 @@ type UserWithToken struct {
 func Register(userInfo user_service.UserRegisterInfo) (*UserWithToken, error) {
 	user, err := user_service.CreateNewUser(userInfo)
 	if err != nil {
-		if err == gorm.ErrDuplicatedKey {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return nil, errors.New("phone number already registered")
 		}
 
@@ -41,7 +41,7 @@ func Login(phoneNumber string, password string) (*UserWithToken, error) {
 	user, err := user_service.GetUserByPhoneNumber(phoneNumber)
 
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("phone number not registered")
 		}
 
