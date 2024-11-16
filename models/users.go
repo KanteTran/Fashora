@@ -9,7 +9,7 @@ import (
 type User struct {
 	PhoneID      string         `gorm:"primaryKey;size:255"`       // Primary key, required
 	PasswordHash string         `gorm:"size:255"`                  // Hashed password
-	UserName     *string        `gorm:"size:100"`                  // User name, optional (nullable)
+	UserName     *string        `gorm:"size:100"`                  // Username, optional (nullable)
 	Birthday     *time.Time     `gorm:"type:date"`                 // Birthday, optional (nullable)
 	Address      *string        `gorm:"size:255"`                  // Address, optional (nullable)
 	DeviceID     *string        `gorm:"size:100"`                  // Device identifier, optional (nullable)
