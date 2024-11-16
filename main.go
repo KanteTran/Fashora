@@ -6,7 +6,9 @@ import (
 	"fashora-backend/controllers/user_controller"
 	"fashora-backend/middlewares"
 	"fashora-backend/models"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,6 +17,14 @@ func main() {
 	config.LoadConfig()
 
 	models.ConnectDatabase()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},                                       // Allow all origins
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},   // Allow methods
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"}, // Allow headers
+		AllowCredentials: true,                                                // Allow credentials
+		MaxAge:           12 * time.Hour,                                      // Max age for preflight requests
+	}))
 
 	// Routes
 	r.POST("/auth/register", auth_controller.Register)
