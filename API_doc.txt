@@ -7,24 +7,43 @@
 	•	GET /user/{phone_id} - Lấy thông tin người dùng (yêu cầu token).
 	•	PUT /user/{phone_id} - Cập nhật thông tin người dùng.
 
+2.1. Try on Input
+    - user upload 3 ảnh lên
+    - BE uplpoad 3 ảnh lên gcp
+    - Save vào bảng Wardrobe_Items, Pose_Images
+    - call API của Lò đức
+    - save vào bảng Try_On_Sessions
+
 2. User_Shop Module – Quản lý thông tin cửa hàng của người dùng
 
 	•	Mô tả: Module này dành riêng cho người dùng có chức năng “cửa hàng”, cho phép quản lý thông tin cửa hàng của họ.
 	•	Endpoints:
 	•	POST /shop/register - Đăng ký cửa hàng mới.
+	        - sdt
+	        - password
+	        - tên cửa hàng
+	        - Địa chỉ
+	        - Mô tả
+	        - Liên kết
+
 	•	POST /shop/login - Đăng nhập cho cửa hàng, trả về token.
 	•	GET /shop/{phone_id} - Lấy thông tin cửa hàng (yêu cầu token).
-	•	PUT /shop/{phone_id} - Cập nhật thông tin cửa hàng.
+	•	PUT /shop/{phone_id} - Cập nhật thông tin cửa hàng
 
 3. Wardrobe_Items Module – Quản lý tủ đồ của người dùng
+
 
 	•	Mô tả: Module này quản lý các món đồ trong tủ đồ của người dùng, bao gồm thêm, sửa, xóa, và lấy danh sách đồ.
 	•	Endpoints:
 	•	POST /wardrobe/{phone_id} - Thêm món đồ mới vào tủ đồ.
+	    - upload image to storage in cloud -> url save
+	    - update database
 	•	GET /wardrobe/{phone_id} - Lấy danh sách các món đồ trong tủ đồ.
-	•	GET /wardrobe/{phone_id}/{item_id} - Lấy thông tin chi tiết món đồ trong tủ đồ.
-	•	PUT /wardrobe/{phone_id}/{item_id} - Cập nhật thông tin món đồ.
-	•	DELETE /wardrobe/{phone_id}/{item_id} - Xóa món đồ khỏi tủ đồ.
+	    - query -> list url
+    •	DELETE /wardrobe/{phone_id}/{item_id} - Xóa món đồ khỏi tủ đồ.
+#######•	GET /wardrobe/{phone_id}/{item_id} - Lấy thông tin chi tiết món đồ trong tủ đồ.
+#######•	PUT /wardrobe/{phone_id}/{item_id} - Cập nhật thông tin món đồ.
+
 
 4. Pose_Images Module – Quản lý ảnh pose của người dùng
 
@@ -40,10 +59,15 @@
 	•	Mô tả: Module này dành cho các sản phẩm của cửa hàng, bao gồm các thao tác thêm, cập nhật, và xóa sản phẩm.
 	•	Endpoints:
 	•	POST /store_items/{store_id} - Thêm sản phẩm mới vào cửa hàng.
+	        - link ảnh
+	        - tên
+	        - mô tả
+	        - link sản phẩm
 	•	GET /store_items/{store_id} - Lấy danh sách các sản phẩm trong cửa hàng.
 	•	GET /store_items/{store_id}/{item_id} - Lấy thông tin chi tiết của một sản phẩm.
 	•	PUT /store_items/{store_id}/{item_id} - Cập nhật thông tin sản phẩm.
 	•	DELETE /store_items/{store_id}/{item_id} - Xóa sản phẩm khỏi cửa hàng.
+
 
 6. Try_On_Sessions Module – Quản lý phiên thử đồ
 
@@ -69,3 +93,6 @@
 	•	UploadImage(phone_id, path string) (string, error) - Upload ảnh và trả về URL.
 	•	DeleteImage(url string) error - Xóa ảnh khỏi S3 theo URL.
 	•	GetImageURL(phone_id, item_id, itemType string) (string, error) - Tạo URL chuẩn cho các item trong S3 (theo cấu trúc như hình ảnh bạn gửi).
+
+
+- API monitor
