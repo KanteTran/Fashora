@@ -12,10 +12,10 @@ import (
 
 type UserWithToken struct {
 	Token string
-	User  models.User
+	User  models.Users
 }
 
-func Register(userInfo user_service.UserRegisterInfo) (*UserWithToken, error) {
+func Register(userInfo user_service.UserInfo) (*UserWithToken, error) {
 	user, err := user_service.CreateNewUser(userInfo)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
@@ -37,7 +37,6 @@ func Register(userInfo user_service.UserRegisterInfo) (*UserWithToken, error) {
 }
 
 func Login(phoneNumber string, password string) (*UserWithToken, error) {
-	// Find the user by phone number
 	user, err := user_service.GetUserByPhoneNumber(phoneNumber)
 
 	if err != nil {
@@ -48,7 +47,6 @@ func Login(phoneNumber string, password string) (*UserWithToken, error) {
 		return nil, err
 	}
 
-	// Verify the password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		return nil, errors.New("invalid password")
 	}

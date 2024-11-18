@@ -3,15 +3,13 @@ package user_service
 import (
 	"errors"
 	"fashora-backend/models"
-	"gorm.io/gorm"
-
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func GetUserByPhoneNumber(phoneNumber string) (*models.User, error) {
-	var user models.User
-	result := models.DB.First(&user, phoneNumber)
-
+func GetUserByPhoneNumber(phoneNumber string) (*models.Users, error) {
+	var user models.Users
+	result := models.DB.Where("phone = ?", phoneNumber).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -19,12 +17,10 @@ func GetUserByPhoneNumber(phoneNumber string) (*models.User, error) {
 	return &user, nil
 }
 
-func CreateNewUser(userInfo UserRegisterInfo) (*models.User, error) {
-	var existingUser models.User
-	if err := models.DB.Where("phone_id = ?", userInfo.PhoneNumber).First(&existingUser).Error; err == nil {
+func CreateNewUser(userInfo UserInfo) (*models.Users, error) {
+	var existingUser models.Users
+	if err := models.DB.Where("phone = ?", userInfo.PhoneNumber).First(&existingUser).Error; err == nil {
 		return nil, errors.New("user already exists")
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.New("failed to check user existence")
 	}
 
 	// Hash the password
@@ -34,8 +30,9 @@ func CreateNewUser(userInfo UserRegisterInfo) (*models.User, error) {
 	}
 
 	// Create the user instance
-	user := models.User{
-		PhoneID:      userInfo.PhoneNumber,
+
+	user := models.Users{
+		Phone:        userInfo.PhoneNumber,
 		PasswordHash: string(hashedPassword),
 		UserName:     userInfo.UserName,
 		Birthday:     userInfo.Birthday,
@@ -43,43 +40,57 @@ func CreateNewUser(userInfo UserRegisterInfo) (*models.User, error) {
 		DeviceID:     userInfo.DeviceID,
 		Gender:       userInfo.Gender,
 	}
-
-	result := models.DB.Create(&user)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := models.DB.Create(&user).Error; err != nil {
+		return nil, nil
 	}
 
 	return &user, nil
 }
 
-// TODO phone is used as primary key, so what if user wants to update their phone number?
-func UpdateUserByPhoneNumber(userInfo UserUpdateInfo) error {
+func UpdateUserByPhoneNumber(userInfoUpdate UserInfo) error {
 	updateFields := map[string]interface{}{}
+	fmt.Println(userInfoUpdate)
 
-	// Conditionally add fields to update
-	if userInfo.Password != nil {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*userInfo.Password), bcrypt.DefaultCost)
+	// Hash password if provided
+	if userInfoUpdate.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInfoUpdate.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return errors.New("failed to hash password")
 		}
-		updateFields["PasswordHash"] = string(hashedPassword)
-	}
-	if userInfo.UserName != nil {
-		updateFields["UserName"] = *userInfo.UserName
-	}
-	if userInfo.Birthday != nil {
-		updateFields["Birthday"] = *userInfo.Birthday
-	}
-	if userInfo.Address != nil {
-		updateFields["Address"] = *userInfo.Address
-	}
-	if userInfo.DeviceID != nil {
-		updateFields["DeviceID"] = *userInfo.DeviceID
-	}
-	if userInfo.Gender != nil {
-		updateFields["Gender"] = *userInfo.Gender
+		updateFields["password_hash"] = string(hashedPassword)
 	}
 
-	// update user
-	return models.DB.Where("phone_id = ?", userInfo.PhoneNumber).Updates(updateFields).Error
+	if userInfoUpdate.UserName != nil {
+		updateFields["user_name"] = *userInfoUpdate.UserName
+	}
+	if userInfoUpdate.Birthday != nil {
+		updateFields["birthday"] = *userInfoUpdate.Birthday
+	}
+	if userInfoUpdate.Address != nil {
+		updateFields["address"] = *userInfoUpdate.Address
+	}
+	if userInfoUpdate.DeviceID != nil {
+		updateFields["device_id"] = *userInfoUpdate.DeviceID
+	}
+	if userInfoUpdate.Gender != nil {
+		updateFields["gender"] = *userInfoUpdate.Gender
+	}
+
+	// If no fields are provided to update, return an error
+	if len(updateFields) == 0 {
+		return errors.New("no fields to update")
+	}
+
+	// Update user record based on phone number
+	result := models.DB.Model(models.Users{}).Where("phone = ?", userInfoUpdate.PhoneNumber).Updates(updateFields)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	// Check if any rows were affected (if no rows were affected, it might indicate the user wasn't found)
+	if result.RowsAffected == 0 {
+		return errors.New("user not found")
+	}
+
+	return nil
 }
