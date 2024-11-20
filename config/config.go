@@ -15,6 +15,13 @@ type Config struct {
 	PostgresPort       string
 	JWTSecret          string
 	JwtExpirationHours string
+	GscBucketName      string
+	GscFolderPeople    string
+	GscFolderPosh      string
+	GscFolderClothes   string
+	GscKeyFile         string
+	HostServer         string
+	PortServer         string
 }
 
 var AppConfig Config
@@ -35,10 +42,16 @@ func LoadConfig() {
 		PostgresPort:       getEnv("POSTGRES_PORT", "5432"),
 		JWTSecret:          getEnv("JWT_SECRET", "default_jwt_secret"),
 		JwtExpirationHours: getEnv("JWT_EXPIRATION_HOURS", "72"),
+		GscBucketName:      getEnv("GSC_BUCKET_NAME", ""),
+		GscFolderPeople:    getEnv("GSC_FOLDER_PEOPLE", ""),
+		GscFolderPosh:      getEnv("GSC_FOLDER_POSH", ""),
+		GscFolderClothes:   getEnv("GSC_FOLDER_CLOTHES", ""),
+		GscKeyFile:         getEnv("GSC_KEY_FILE", ""),
+		HostServer:         getEnv("HOST_SERVER", ""),
+		PortServer:         getEnv("PORT_SERVER", ""),
 	}
 }
 
-// getEnv reads an environment variable or returns a default value if not found
 func getEnv(key, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value

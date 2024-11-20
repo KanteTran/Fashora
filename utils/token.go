@@ -27,7 +27,7 @@ func GenerateJWT(phoneID string) (string, error) {
 	return token.SignedString(jwtKey)
 }
 
-func VerifyJWT(tokenString string) (*models.User, error) {
+func VerifyJWT(tokenString string) (*models.Users, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
