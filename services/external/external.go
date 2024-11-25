@@ -2,52 +2,147 @@ package external
 
 import (
 	"bytes"
-	"encoding/base64"
+	"context"
+	"encoding/json"
+	"fashora-backend/config"
+	"fashora-backend/models"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2/google"
 	"io"
+	_ "io"
+	"log"
 	"mime/multipart"
+	"net/http"
+	"os"
 )
 
-func SimulateExternalAPI(image1, image2, image3 []byte) (string, error) {
+func CallTryOnAPI(personImageURL, clothImageURL, maskURL string) APIResponse {
+	// Create a multipart form request
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	addFileToWriter := func(fieldName string, data []byte) error {
-		part, err := writer.CreateFormFile(fieldName, fieldName+".jpg")
-		if err != nil {
-			return err
+	// Add form fields
+	fields := map[string]string{
+		"person_image_url": personImageURL,
+		"cloth_image_url":  clothImageURL,
+		"mask_url":         maskURL,
+		"access_token":     RefreshTokenGcp(), // Ensure RefreshTokenGcp() provides the access token
+	}
+
+	for key, value := range fields {
+		if err := writer.WriteField(key, value); err != nil {
+			return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to add field '%s': %v", key, err))
 		}
-		_, err = part.Write(data)
-		return err
 	}
 
-	if err := addFileToWriter("person_image", image1); err != nil {
-		return "", err
-	}
-	if err := addFileToWriter("cloth_image", image2); err != nil {
-		return "", err
-	}
-	if err := addFileToWriter("mask", image3); err != nil {
-		return "", err
+	// Close the writer
+	if err := writer.Close(); err != nil {
+		return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to close writer: %v", err))
 	}
 
-	writer.Close()
+	// Create the HTTP request
+	req, err := http.NewRequest("POST", config.AppConfig.ModelGenAPI, body)
+	if err != nil {
+		return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to create request: %v", err))
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	processedImage := base64.StdEncoding.EncodeToString(body.Bytes())
-	return processedImage, nil
+	// Send the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return createErrorResponse(http.StatusBadGateway, fmt.Sprintf("failed to send request: %v", err))
+	}
+	defer resp.Body.Close()
+
+	// Read response body
+	bodyNew, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to read response body: %v", err))
+	}
+
+	// Decode JSON response
+	var responseJSON map[string]interface{}
+	err = json.Unmarshal(bodyNew, &responseJSON)
+	if err != nil {
+		return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to decode JSON: %v", err))
+	}
+
+	// Extract "result_url"
+	resultURL, ok := responseJSON["result_url"].(string)
+	if !ok {
+		return createErrorResponse(http.StatusInternalServerError, "result_url not found in response or is not a string")
+	}
+
+	// Return a structured response
+	return APIResponse{
+		Success: true,
+		Status:  http.StatusOK,
+		Message: "Successfully fetched result URL",
+		Data: map[string]string{
+			"result_url": resultURL,
+		},
+	}
 }
 
-func ReadImageFile(fileHeader *multipart.FileHeader) ([]byte, error) {
-	file, err := fileHeader.Open()
-	if err != nil {
-		return nil, err
+func createErrorResponse(status int, message string) APIResponse {
+	return APIResponse{
+		Success: false,
+		Status:  status,
+		Message: message,
+		Data:    nil,
 	}
-	defer file.Close()
+}
+func RefreshTokenGcp() string {
+	credentialsFilePath := config.AppConfig.GscKeyFile // Update with your actual file path
 
-	// Read the file content into a byte slice
-	fileData, err := io.ReadAll(file)
+	data, err := os.ReadFile(credentialsFilePath)
 	if err != nil {
-		return nil, err
+		log.Fatalf("Failed to read credentials file: %v", err)
 	}
 
-	return fileData, nil
+	config, err := google.JWTConfigFromJSON(data, "https://www.googleapis.com/auth/cloud-platform")
+	if err != nil {
+		log.Fatalf("Failed to parse credentials file: %v", err)
+	}
+
+	// Create a token source
+	tokenSource := config.TokenSource(context.Background())
+
+	// Retrieve the token
+	token, err := tokenSource.Token()
+	if err != nil {
+		log.Fatalf("Failed to retrieve token: %v", err)
+	}
+
+	// Return the access token
+	return token.AccessToken
+}
+
+type APIResponse struct {
+	Status  int `json:"status"`
+	Success bool
+	Message string
+	Data    map[string]string
+}
+
+func HomePage(c *gin.Context) {
+	var stores []models.Store
+
+	// Lấy danh sách các store từ database
+	if err := models.DB.Find(&stores).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch stores"})
+		return
+	}
+
+	// Render trang homepage và truyền danh sách stores vào
+	c.HTML(http.StatusOK, "home.html", gin.H{
+		"stores": stores,
+	})
+}
+
+// Create Store Page
+func CreateStorePage(c *gin.Context) {
+	c.HTML(http.StatusOK, "create_store.html", nil)
 }

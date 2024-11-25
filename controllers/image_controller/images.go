@@ -5,67 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"fashora-backend/config"
-	"fashora-backend/models"
-	"fashora-backend/websocket"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/api/option"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 )
-
-func Upload3Images(c *gin.Context) {
-	// Lấy thông tin user từ context để xác thực
-	userInterface, exists := c.Get("user")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"status":  http.StatusUnauthorized,
-			"message": "User not authenticated",
-		})
-		return
-	}
-
-	user, ok := userInterface.(models.Users)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"status":  http.StatusUnauthorized,
-			"message": "Invalid user type",
-		})
-		return
-	}
-	userID := user.Id
-
-	// Nâng cấp kết nối HTTP lên WebSocket
-	conn, err := websocket_conn.Upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		log.Println("Failed to upgrade WebSocket connection:", err)
-		return
-	}
-	defer conn.Close()
-
-	log.Printf("WebSocket connection established for userID: %v\n", userID)
-	websocket_conn.Clients[userID] = conn
-
-	// Lắng nghe channel của userID và gửi dữ liệu đến WebSocket khi có dữ liệu mới
-	if ch, exists := websocket_conn.UserChannels[userID]; exists {
-		for message := range ch {
-			// Gửi dữ liệu qua WebSocket
-			err := conn.WriteJSON(gin.H{"message": message})
-			if err != nil {
-				log.Println("Error writing WebSocket message:", err)
-				break
-			}
-		}
-	} else {
-		log.Println("No channel found for user:", userID)
-	}
-}
 
 func UploadImage(c *gin.Context) {
 	// Retrieve the file from the form
