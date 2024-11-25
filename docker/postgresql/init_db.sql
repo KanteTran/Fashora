@@ -13,14 +13,29 @@ CREATE TABLE users (
                              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- CREATE TABLE tokens (
---
---     phone_id VARCHAR(255) PRIMARY KEY,                -- Định nghĩa phone_id là PRIMARY KEY
---     token VARCHAR(255) UNIQUE NOT NULL,               -- JWT token, phải là duy nhất
---     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Tự động đặt thời gian tạo
---     expired_time TIMESTAMP NOT NULL,                  -- Thời gian hết hạn của token
---     CONSTRAINT fk_phone_id FOREIGN KEY (phone_id) REFERENCES user_phones(phone_id) -- Ràng buộc FOREIGN KEY
--- );
+DROP TABLE IF EXISTS stores;
+CREATE TABLE stores (
+                      id SERIAL PRIMARY KEY,
+                      phone VARCHAR(15) NOT NULL UNIQUE,
+                      store_name VARCHAR(255) NOT NULL,
+                      address TEXT NOT NULL,
+                      description TEXT,
+                      password VARCHAR(255) NOT NULL,
+                      status INT NOT NULL,
+                      url_image VARCHAR(255) NOT NULL
+
+);
+
+DROP TABLE IF EXISTS items;
+CREATE TABLE items (
+                       id SERIAL PRIMARY KEY,
+                       store_id INT NOT NULL,
+                       name VARCHAR(255) NOT NULL,
+                       item_url TEXT,
+                       image_url TEXT[],
+                       price VARCHAR(50)
+);
+
 
 -- Pose Images table
 -- CREATE TABLE pose_images (

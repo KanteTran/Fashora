@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Store Manager</title>
+</head>
+<body>
+<h1>Store Manager</h1>
+<a href="/stores/create-store">Create Store</a> | <a href="/stores/add-item">Add Item</a>
+<h2>Stores</h2>
+<ul>
+    {{range .stores}}
+    <li>
+        <b>{{.StoreName}}</b> <br>
+        <b>Phone:</b> {{.Phone}} <br>
+        <b>Address:</b> {{.Address}} <br>
+        <b>Description:</b> {{.Description}} <br>
+        <b>Status:</b> {{.Status}} <br>
+    </li>
+    {{else}}
+    <li>No stores created yet.</li>
+    {{end}}
+</ul>
+</body>
+</html>

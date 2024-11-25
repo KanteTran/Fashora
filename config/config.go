@@ -22,6 +22,8 @@ type Config struct {
 	GscKeyFile         string
 	HostServer         string
 	PortServer         string
+	ModelGenAPI        string
+	GscStoreImage      string
 }
 
 var AppConfig Config
@@ -49,6 +51,8 @@ func LoadConfig() {
 		GscKeyFile:         getEnv("GSC_KEY_FILE", ""),
 		HostServer:         getEnv("HOST_SERVER", ""),
 		PortServer:         getEnv("PORT_SERVER", ""),
+		ModelGenAPI:        getEnv("MODEL_GEN_API", ""),
+		GscStoreImage:      getEnv("GSC_STORE_IMAGE", ""),
 	}
 }
 
