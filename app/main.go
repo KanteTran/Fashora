@@ -41,7 +41,7 @@ func main() {
 	r.GET("/stores", external.HomePage)
 	r.GET("/stores/create-store", external.CreateStorePage)
 	r.POST("/stores/create-store", store_controller.CreateStore)
-	r.GET("/stores/listallstore", store_controller.ListStores)
+	r.GET("/stores/list-all-store", store_controller.ListStores)
 
 	r.GET("/stores/add-item", store_controller.AddItemPage)
 	//r.POST("/stores/add-item", store_controller.AddItem)
@@ -51,11 +51,8 @@ func main() {
 	protected.Use(middlewares.AuthMiddleware())
 	{
 		protected.POST("/auth/update", auth_controller.UpdateUser)
-
-		//protected.POST("model/gen", image_controller.Upload3Images)
 	}
 
-	// Chạy REST API server trên cổng được cấu hình
 	go func() {
 		err := r.Run(fmt.Sprintf("%s:%s", config.AppConfig.HostServer, config.AppConfig.PortServer))
 		if err != nil {

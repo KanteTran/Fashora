@@ -16,19 +16,12 @@ import (
 )
 
 func UploadImage(c *gin.Context) {
-	// Retrieve the file from the form
 	file, err := c.FormFile("image")
-	//folder, err_folder := c.FormFile("folder")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No file uploaded"})
 		return
 	}
-	//if err_folder != nil {
-	//	c.JSON(http.StatusBadRequest, gin.H{"error": "No file uploaded"})
-	//	return
-	//}
 
-	// Open the file
 	fileContent, err := file.Open()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to open file"})

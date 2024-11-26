@@ -28,8 +28,6 @@ func CreateStore(c *gin.Context) {
 		return
 	}
 
-	print("bat dau nhanh xong r ne")
-
 	// Upload file lên GCS
 	err = external.CreateFoldersIfNotExists(config.AppConfig.GscBucketName, fmt.Sprintf("stores/%s", storeName))
 	if err != nil {
@@ -58,76 +56,74 @@ func CreateStore(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create store"})
 		return
 	}
-	print("luuw oke")
 
 	c.Redirect(http.StatusFound, "/stores")
 }
 
 func AddItemPage(c *gin.Context) {
 	var stores []models.Store
-	// Lấy danh sách store từ database
 	if err := models.DB.Find(&stores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch stores"})
 		return
 	}
 
-	// Render trang HTML với danh sách stores
 	c.HTML(http.StatusOK, "add_item.html", gin.H{
 		"stores": stores,
 	})
 }
 
-//func AddItem(c *gin.Context) {
-//	// Lấy dữ liệu từ form
-//	storeID := c.PostForm("store_id")
-//	name := c.PostForm("name")
-//	url := c.PostForm("url")
-//	productCode := c.PostForm("product_code")
+//	func AddItem(c *gin.Context) {
+//		// Lấy dữ liệu từ form
+//		storeID := c.PostForm("store_id")
+//		name := c.PostForm("name")
+//		url := c.PostForm("url")
+//		productCode := c.PostForm("product_code")
 //
-//	// Nhận file ảnh từ form
-//	file, err := c.FormFile("image")
-//	if err != nil {
-//		c.JSON(http.StatusBadRequest, gin.H{"error": "Could not get image file"})
-//		return
+//		// Nhận file ảnh từ form
+//		file, err := c.FormFile("image")
+//		if err != nil {
+//			c.JSON(http.StatusBadRequest, gin.H{"error": "Could not get image file"})
+//			return
+//		}
+//
+//		// Upload ảnh lên GCS
+//		bucketName := config.AppConfig.GscBucketName
+//		folderName := fmt.Sprintf("stores/%s/items", storeID) // Tạo thư mục trong GCS theo store ID
+//		fileName := fmt.Sprintf("%s/%s", folderName, file.Filename)
+//
+//		// Upload ảnh và lấy URL
+//		imageURL, err := external.UploadImageToGCS(bucketName, fileName, file)
+//		if err != nil {
+//			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Could not upload image: %s", err)})
+//			return
+//		}
+//
+//		// Tạo một bản ghi item mới
+//		item := models.Item{
+//			StoreID:     parseID(storeID),
+//			Name:        name,
+//			URL:         url,
+//			ImageURLs:   []string{imageURL}, // Chỉ chứa URL của ảnh đã upload
+//			ProductCode: productCode,
+//		}
+//
+//		// Lưu vào DB
+//		if err := models.DB.Create(&item).Error; err != nil {
+//			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not add item"})
+//			return
+//		}
+//
+//		// Trả về phản hồi thành công
+//		c.JSON(http.StatusCreated, gin.H{
+//			"message":   "Item added successfully",
+//			"item_id":   item.ID,
+//			"store_id":  item.StoreID,
+//			"name":      item.Name,
+//			"url":       item.URL,
+//			"image_url": imageURL,
+//		})
 //	}
 //
-//	// Upload ảnh lên GCS
-//	bucketName := config.AppConfig.GscBucketName
-//	folderName := fmt.Sprintf("stores/%s/items", storeID) // Tạo thư mục trong GCS theo store ID
-//	fileName := fmt.Sprintf("%s/%s", folderName, file.Filename)
-//
-//	// Upload ảnh và lấy URL
-//	imageURL, err := external.UploadImageToGCS(bucketName, fileName, file)
-//	if err != nil {
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Could not upload image: %s", err)})
-//		return
-//	}
-//
-//	// Tạo một bản ghi item mới
-//	item := models.Item{
-//		StoreID:     parseID(storeID),
-//		Name:        name,
-//		URL:         url,
-//		ImageURLs:   []string{imageURL}, // Chỉ chứa URL của ảnh đã upload
-//		ProductCode: productCode,
-//	}
-//
-//	// Lưu vào DB
-//	if err := models.DB.Create(&item).Error; err != nil {
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not add item"})
-//		return
-//	}
-//
-//	// Trả về phản hồi thành công
-//	c.JSON(http.StatusCreated, gin.H{
-//		"message":   "Item added successfully",
-//		"item_id":   item.ID,
-//		"store_id":  item.StoreID,
-//		"name":      item.Name,
-//		"url":       item.URL,
-//		"image_url": imageURL,
-//	})
-//}
 // Helper to parse IDs
 func parseID(input string) int {
 	var id int

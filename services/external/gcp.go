@@ -82,9 +82,6 @@ func UploadImageToGCS(fileURL string, file *multipart.FileHeader) (string, error
 	}
 	defer client.Close()
 
-	print("oke r ne" +
-		"")
-	// Open the file
 	src, err := file.Open()
 	if err != nil {
 		return "", fmt.Errorf("failed to open file: %v", err)
@@ -103,8 +100,6 @@ func UploadImageToGCS(fileURL string, file *multipart.FileHeader) (string, error
 		return "", fmt.Errorf("failed to upload file to GCS: %v", err)
 	}
 
-	// Close the writer
-	print("ddkdmk")
 	if err := writer.Close(); err != nil {
 		return "", fmt.Errorf("failed to close writer: %v", err)
 	}

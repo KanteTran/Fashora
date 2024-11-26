@@ -107,16 +107,13 @@ func RefreshTokenGcp() string {
 		log.Fatalf("Failed to parse credentials file: %v", err)
 	}
 
-	// Create a token source
 	tokenSource := config.TokenSource(context.Background())
 
-	// Retrieve the token
 	token, err := tokenSource.Token()
 	if err != nil {
 		log.Fatalf("Failed to retrieve token: %v", err)
 	}
 
-	// Return the access token
 	return token.AccessToken
 }
 
@@ -130,19 +127,16 @@ type APIResponse struct {
 func HomePage(c *gin.Context) {
 	var stores []models.Store
 
-	// Lấy danh sách các store từ database
 	if err := models.DB.Find(&stores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch stores"})
 		return
 	}
 
-	// Render trang homepage và truyền danh sách stores vào
 	c.HTML(http.StatusOK, "home.html", gin.H{
 		"stores": stores,
 	})
 }
 
-// Create Store Page
 func CreateStorePage(c *gin.Context) {
 	c.HTML(http.StatusOK, "create_store.html", nil)
 }

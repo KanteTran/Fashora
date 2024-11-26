@@ -17,7 +17,7 @@ type Config struct {
 	JwtExpirationHours string
 	GscBucketName      string
 	GscFolderPeople    string
-	GscFolderPosh      string
+	GscFolderMask      string
 	GscFolderClothes   string
 	GscKeyFile         string
 	HostServer         string
@@ -46,7 +46,7 @@ func LoadConfig() {
 		JwtExpirationHours: getEnv("JWT_EXPIRATION_HOURS", "72"),
 		GscBucketName:      getEnv("GSC_BUCKET_NAME", ""),
 		GscFolderPeople:    getEnv("GSC_FOLDER_PEOPLE", ""),
-		GscFolderPosh:      getEnv("GSC_FOLDER_POSH", ""),
+		GscFolderMask:      getEnv("GSC_FOLDER_POSH", ""),
 		GscFolderClothes:   getEnv("GSC_FOLDER_CLOTHES", ""),
 		GscKeyFile:         getEnv("GSC_KEY_FILE", ""),
 		HostServer:         getEnv("HOST_SERVER", ""),

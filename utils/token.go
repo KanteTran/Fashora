@@ -5,11 +5,10 @@ import (
 	"fashora-backend/config"
 	"fashora-backend/models"
 	"fashora-backend/services/user_service"
-	"strconv"
-	"time"
-
 	"github.com/golang-jwt/jwt/v4"
 	"gorm.io/gorm"
+	"strconv"
+	"time"
 )
 
 var jwtKey = []byte(config.AppConfig.JWTSecret)

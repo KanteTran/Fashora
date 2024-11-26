@@ -1,12 +1,10 @@
 package middlewares
 
 import (
+	"fashora-backend/utils"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
-
-	"fashora-backend/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
