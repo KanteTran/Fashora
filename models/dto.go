@@ -1,9 +1,10 @@
 package models
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Users struct {
@@ -28,7 +29,7 @@ func (u *Users) BeforeCreate(*gorm.DB) (err error) {
 }
 
 type Store struct {
-	ID          int    `json:"id" gorm:"primaryKey"`
+	Id          string `json:"id" gorm:"primaryKey"`
 	Phone       string `json:"phone" gorm:"unique;not null"`
 	StoreName   string `json:"store_name" gorm:"not null"`
 	Address     string `json:"address" gorm:"not null"`
@@ -36,6 +37,13 @@ type Store struct {
 	Password    string `json:"password" gorm:"not null"`
 	Status      int    `json:"status" gorm:"not null"`
 	UrlImage    string `json:"url_image" gorm:"not null"`
+}
+
+func (u *Store) BeforeCreate(*gorm.DB) (err error) {
+	if u.Id == "" {
+		u.Id = uuid.New().String()
+	}
+	return
 }
 
 type Item struct {
