@@ -10,10 +10,11 @@ import (
 	"fashora-backend/models"
 	"fashora-backend/services/external"
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"log"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -44,7 +45,7 @@ func main() {
 	r.GET("/stores/list-all-store", store_controller.ListStores)
 
 	r.GET("/stores/add-item", store_controller.AddItemPage)
-	//r.POST("/stores/add-item", store_controller.AddItem)
+	r.POST("/stores/add-item", store_controller.AddItem)
 
 	r.POST("/try_on/push", try_on_controller.UploadImages)
 	protected := r.Group("/")
