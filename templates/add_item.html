@@ -23,7 +23,7 @@
     <select id="store_id" name="store_id" required onchange="showItemFields()">
         <option value="">-- Select a Store --</option>
         {{range .stores}}
-        <option value="{{.ID}}">{{.StoreName}}</option>
+        <option value="{{.Id}}">{{.StoreName}}</option>
         {{end}}
     </select><br><br>
 

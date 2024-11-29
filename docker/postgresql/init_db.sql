@@ -15,7 +15,7 @@ CREATE TABLE users (
 
 DROP TABLE IF EXISTS stores;
 CREATE TABLE stores (
-                      id SERIAL PRIMARY KEY,
+                      id VARCHAR(255) PRIMARY KEY,
                       phone VARCHAR(15) NOT NULL UNIQUE,
                       store_name VARCHAR(255) NOT NULL,
                       address TEXT NOT NULL,
@@ -31,8 +31,8 @@ CREATE TABLE items (
                        id SERIAL PRIMARY KEY,
                        store_id INT NOT NULL,
                        name VARCHAR(255) NOT NULL,
-                       item_url TEXT,
-                       image_url TEXT[],
+                       url TEXT,
+                       image_url TEXT,
                        price VARCHAR(50)
 );
 

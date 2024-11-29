@@ -10,11 +10,10 @@ import (
 	"fashora-backend/models"
 	"fashora-backend/services/external"
 	"fmt"
-	"log"
-	"time"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"log"
+	"time"
 )
 
 func main() {
@@ -31,7 +30,6 @@ func main() {
 		MaxAge:           12 * time.Hour,                                      // Max age for preflight requests
 	}))
 
-	// Định nghĩa các route cho REST API
 	r.POST("/auth/register", auth_controller.Register)
 	r.POST("/auth/login", auth_controller.Login)
 	r.POST("/auth/check_phone", auth_controller.CheckPhoneNumberExists)

@@ -47,13 +47,20 @@ func (u *Stores) BeforeCreate(*gorm.DB) (err error) {
 }
 
 type Item struct {
-	ID          int      `json:"id" gorm:"primaryKey"`
-	StoreID     int      `json:"store_id" gorm:"not null"`
-	Name        string   `json:"name" gorm:"not null"`
-	URL         string   `json:"url"`
-	ImageURLs   []string `json:"image_urls" gorm:"type:text[]"`
-	ProductCode string   `json:"product_code"`
+	ID       int    `json:"id" gorm:"primaryKey;autoIncrement"`
+	StoreID  int    `json:"store_id" gorm:"not null"`
+	Name     string `json:"name" gorm:"not null"`
+	URL      string `json:"url"`
+	ImageURL string `json:"image" `
+	//ProductCode string   `json:"product_code"`
 }
+
+//func (u *Item) BeforeCreate(*gorm.DB) (err error) {
+//	if u.ID == "" {
+//		u.ID = uuid.New().String()
+//	}
+//	return
+//}
 
 type ImageRequest struct {
 	Image1 []byte `json:"image1"` // First image in binary form

@@ -12,3 +12,7 @@ go.work.sum
 *.json
 smart-exchange-441906-p0-c0277d140202.json
 __pycache__
+app/app.log
+app/app.pid
+app.log
+appp.pid

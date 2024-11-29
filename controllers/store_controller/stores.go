@@ -13,18 +13,11 @@ import (
 )
 
 func CreateStore(c *gin.Context) {
-	// Lấy dữ liệu từ form
 	phone := c.PostForm("phone")
 	storeName := c.PostForm("store_name")
 	address := c.PostForm("address")
 	description := c.PostForm("description")
-	password := c.PostForm("password")
-	status := c.PostForm("status")
 
-	// Chuyển đổi status sang số nguyên
-	storeStatus := parseID(status)
-
-	// Nhận file ảnh từ form
 	file, err := c.FormFile("image")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Could not get image"})
@@ -37,23 +30,19 @@ func CreateStore(c *gin.Context) {
 		return
 	}
 
-	// Tạo một bản ghi store mới
 	store := models.Stores{
 		Phone:       phone,
 		StoreName:   storeName,
 		Address:     address,
 		Description: description,
-		Password:    password,
-		Status:      storeStatus,
+		Status:      1,
 	}
 
-	// Lưu vào DB
 	if err := models.DB.Create(&store).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create store"})
 		return
 	}
 
-	// Upload file lên GCS
 	err = external.CreateFoldersIfNotExists(config.AppConfig.GscBucketName, fmt.Sprintf("stores/%s", store.Id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create store's cloud folder"})
@@ -70,14 +59,12 @@ func CreateStore(c *gin.Context) {
 	}
 
 	store.UrlImage = url
-	// Update the store record with the image URL
 	if err := tx.Save(&store).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update store with image URL"})
 		return
 	}
 
-	// Commit the transaction
 	if err := tx.Commit().Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to commit transaction"})
 		return
@@ -99,21 +86,17 @@ func AddItemPage(c *gin.Context) {
 }
 
 func AddItem(c *gin.Context) {
-	form, err := c.MultipartForm()
+	_, err := c.MultipartForm()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to parse form data"})
 		return
 	}
 
-	// Lấy dữ liệu từ form
 	storeID := c.PostForm("store_id")
 	name := c.PostForm("name")
 	url := c.PostForm("url")
-	productCode := c.PostForm("product_code")
 
-	// Nhận file ảnh từ form
-	files := form.File["images[]"]
-
+	file, _ := c.FormFile("image")
 	var store models.Stores
 	err = models.DB.Where("id = ?", storeID).First(&store).Error
 	if err != nil {
@@ -124,55 +107,37 @@ func AddItem(c *gin.Context) {
 		}
 	}
 
-	// Tạo thư mục trong GCS theo store ID
 	err = external.CreateFoldersIfNotExists(config.AppConfig.GscBucketName, fmt.Sprintf("stores/%s/items", storeID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Could not create store's items folder: %s", err)})
 		return
 	}
 
-	// Upload ảnh và lấy URL
-	var imageURLs []string
-	folderName := fmt.Sprintf("%s/stores/%s/items", config.AppConfig.GscBucketName, storeID)
-	for _, file := range files {
-		filePath := fmt.Sprintf("%s/%s", folderName, file.Filename)
-		imageURL, _ := external.UploadImageToGCS(filePath, file)
-		imageURLs = append(imageURLs, imageURL)
-	}
+	fileName := fmt.Sprintf("%s/%s/%s", config.AppConfig.GscBucketName, fmt.Sprintf("stores/%s/items", store.Id), file.Filename)
+	url, err = external.UploadImageToGCS(fileName, file)
 
-	// Không upload được ảnh nào
-	if len(imageURLs) == 0 {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not upload any image of item"})
-		return
-	}
-
-	// Tạo một bản ghi item mới
 	item := models.Item{
-		StoreID:     parseID(storeID),
-		Name:        name,
-		URL:         url,
-		ImageURLs:   imageURLs, // Chỉ chứa URL của ảnh đã upload
-		ProductCode: productCode,
+		StoreID:  parseID(storeID),
+		Name:     name,
+		URL:      url,
+		ImageURL: url,
 	}
 
-	// Lưu vào DB
 	if err := models.DB.Create(&item).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not add item"})
 		return
 	}
 
-	// Trả về phản hồi thành công
 	c.JSON(http.StatusCreated, gin.H{
 		"message":    "Item added successfully",
 		"item_id":    item.ID,
 		"store_id":   item.StoreID,
 		"name":       item.Name,
 		"url":        item.URL,
-		"image_urls": imageURLs,
+		"image_urls": url,
 	})
 }
 
-// Helper to parse IDs
 func parseID(input string) int {
 	var id int
 	fmt.Sscanf(input, "%d", &id)
@@ -182,7 +147,6 @@ func parseID(input string) int {
 func ListStores(c *gin.Context) {
 	var stores []models.Stores
 
-	// Lấy danh sách các cửa hàng từ DB
 	if err := models.DB.Find(&stores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
@@ -192,7 +156,6 @@ func ListStores(c *gin.Context) {
 		return
 	}
 
-	// Trả về danh sách cửa hàng dưới dạng JSON
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "Stores fetched successfully",
