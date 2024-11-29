@@ -28,7 +28,7 @@ func (u *Users) BeforeCreate(*gorm.DB) (err error) {
 	return
 }
 
-type Store struct {
+type Stores struct {
 	Id          string `json:"id" gorm:"primaryKey"`
 	Phone       string `json:"phone" gorm:"unique;not null"`
 	StoreName   string `json:"store_name" gorm:"not null"`
@@ -39,7 +39,7 @@ type Store struct {
 	UrlImage    string `json:"url_image" gorm:"not null"`
 }
 
-func (u *Store) BeforeCreate(*gorm.DB) (err error) {
+func (u *Stores) BeforeCreate(*gorm.DB) (err error) {
 	if u.Id == "" {
 		u.Id = uuid.New().String()
 	}

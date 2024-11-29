@@ -38,7 +38,7 @@ func CreateStore(c *gin.Context) {
 	}
 
 	// Tạo một bản ghi store mới
-	store := models.Store{
+	store := models.Stores{
 		Phone:       phone,
 		StoreName:   storeName,
 		Address:     address,
@@ -87,7 +87,7 @@ func CreateStore(c *gin.Context) {
 }
 
 func AddItemPage(c *gin.Context) {
-	var stores []models.Store
+	var stores []models.Stores
 	if err := models.DB.Find(&stores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch stores"})
 		return
@@ -114,7 +114,7 @@ func AddItem(c *gin.Context) {
 	// Nhận file ảnh từ form
 	files := form.File["images[]"]
 
-	var store models.Store
+	var store models.Stores
 	err = models.DB.Where("id = ?", storeID).First(&store).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -180,7 +180,7 @@ func parseID(input string) int {
 }
 
 func ListStores(c *gin.Context) {
-	var stores []models.Store
+	var stores []models.Stores
 
 	// Lấy danh sách các cửa hàng từ DB
 	if err := models.DB.Find(&stores).Error; err != nil {

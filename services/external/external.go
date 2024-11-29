@@ -125,7 +125,7 @@ type APIResponse struct {
 }
 
 func HomePage(c *gin.Context) {
-	var stores []models.Store
+	var stores []models.Stores
 
 	if err := models.DB.Find(&stores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch stores"})
