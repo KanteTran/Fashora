@@ -120,7 +120,7 @@ func AddItem(c *gin.Context) {
 	}
 
 	item := models.Item{
-		StoreID:  parseID(storeID),
+		StoreID:  storeID,
 		Name:     name,
 		URL:      url,
 		ImageURL: imageUrl,
@@ -140,15 +140,6 @@ func AddItem(c *gin.Context) {
 		"image_url": imageUrl,
 	})
 	c.Redirect(http.StatusFound, "/stores/add-item?success=true")
-}
-
-func parseID(input string) int {
-	var id int
-	_, err := fmt.Sscanf(input, "%d", &id)
-	if err != nil {
-		return 0
-	}
-	return id
 }
 
 func ListStores(c *gin.Context) {
@@ -172,11 +163,13 @@ func ListStores(c *gin.Context) {
 
 func GetStoreItemsById(c *gin.Context) {
 	// Lấy `id` từ tham số URL
-	storeID := c.Param("id")
+	//storeID := c.Param("id")
+	storeID := c.Query("id")
 
+	fmt.Printf(storeID)
 	// Kiểm tra xem cửa hàng có tồn tại không
 	var store models.Stores
-	if err := models.DB.Where("id = ?", storeID).First(&store).Error; err != nil {
+	if err := models.DB.Where("Id = ?", storeID).First(&store).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			response := models.Response{
 				Success: false,
@@ -225,6 +218,55 @@ func GetStoreItemsById(c *gin.Context) {
 				"status":      store.Status,
 			},
 			"items": items,
+		},
+	}
+	c.JSON(http.StatusOK, response)
+}
+
+func GetItemsById(c *gin.Context) {
+	itemID := c.Query("id")
+	if itemID == "" {
+		response := models.Response{
+			Success: false,
+			Status:  http.StatusBadRequest,
+			Message: "Item ID is missing in the request",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	var item models.Item
+	if err := models.DB.Where("id = ?", itemID).First(&item).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			response := models.Response{
+				Success: false,
+				Status:  http.StatusNotFound,
+				Message: fmt.Sprintf("Item with ID %s not found", itemID),
+			}
+			c.JSON(http.StatusNotFound, response)
+			return
+		}
+
+		response := models.Response{
+			Success: false,
+			Status:  http.StatusInternalServerError,
+			Message: "Failed to fetch item",
+			Data:    err.Error(),
+		}
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	response := models.Response{
+		Success: true,
+		Status:  http.StatusOK,
+		Message: "Item fetched successfully",
+		Data: gin.H{
+			"id":        item.ID,
+			"store_id":  item.StoreID,
+			"name":      item.Name,
+			"url":       item.URL,
+			"image_url": item.ImageURL,
 		},
 	}
 	c.JSON(http.StatusOK, response)

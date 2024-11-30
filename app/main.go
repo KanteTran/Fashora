@@ -41,6 +41,8 @@ func main() {
 	r.GET("/stores/create-store", external.CreateStorePage)
 	r.POST("/stores/create-store", store_controller.CreateStore)
 	r.GET("/stores/list-all-store", store_controller.ListStores)
+	r.GET("/stores/get_all_items_store", store_controller.GetStoreItemsById)
+	r.GET("/stores/get_only_items", store_controller.GetItemsById)
 
 	r.GET("/stores/add-item", store_controller.AddItemPage)
 	r.POST("/stores/add-item", store_controller.AddItem)

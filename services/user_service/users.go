@@ -3,7 +3,6 @@ package user_service
 import (
 	"errors"
 	"fashora-backend/models"
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -46,9 +45,7 @@ func CreateNewUser(userInfo models.UserInfo) (*models.Users, error) {
 
 func UpdateUserByPhoneNumber(userInfoUpdate models.UserInfo) error {
 	updateFields := map[string]interface{}{}
-	fmt.Println(userInfoUpdate)
 
-	// Hash password if provided
 	if userInfoUpdate.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInfoUpdate.Password), bcrypt.DefaultCost)
 		if err != nil {
