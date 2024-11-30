@@ -17,19 +17,16 @@ func GetUserByPhoneNumber(phoneNumber string) (*models.Users, error) {
 	return &user, nil
 }
 
-func CreateNewUser(userInfo UserInfo) (*models.Users, error) {
+func CreateNewUser(userInfo models.UserInfo) (*models.Users, error) {
 	var existingUser models.Users
 	if err := models.DB.Where("phone = ?", userInfo.PhoneNumber).First(&existingUser).Error; err == nil {
 		return nil, errors.New("user already exists")
 	}
 
-	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInfo.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, errors.New("failed to hash password")
 	}
-
-	// Create the user instance
 
 	user := models.Users{
 		Phone:        userInfo.PhoneNumber,
@@ -47,7 +44,7 @@ func CreateNewUser(userInfo UserInfo) (*models.Users, error) {
 	return &user, nil
 }
 
-func UpdateUserByPhoneNumber(userInfoUpdate UserInfo) error {
+func UpdateUserByPhoneNumber(userInfoUpdate models.UserInfo) error {
 	updateFields := map[string]interface{}{}
 	fmt.Println(userInfoUpdate)
 
@@ -76,18 +73,15 @@ func UpdateUserByPhoneNumber(userInfoUpdate UserInfo) error {
 		updateFields["gender"] = *userInfoUpdate.Gender
 	}
 
-	// If no fields are provided to update, return an error
 	if len(updateFields) == 0 {
 		return errors.New("no fields to update")
 	}
 
-	// Update user record based on phone number
 	result := models.DB.Model(models.Users{}).Where("phone = ?", userInfoUpdate.PhoneNumber).Updates(updateFields)
 	if result.Error != nil {
 		return result.Error
 	}
 
-	// Check if any rows were affected (if no rows were affected, it might indicate the user wasn't found)
 	if result.RowsAffected == 0 {
 		return errors.New("user not found")
 	}

@@ -15,7 +15,6 @@ import (
 )
 
 func UploadImages(c *gin.Context) {
-	// List of form keys and corresponding bucket names
 	images := []struct {
 		formKey    string
 		bucketName string
@@ -42,41 +41,47 @@ func UploadImages(c *gin.Context) {
 	for _, image := range images {
 		file, err := c.FormFile(image.formKey)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("No file uploaded for %s", image.formKey)})
+			c.JSON(http.StatusBadRequest,
+				gin.H{"error": fmt.Sprintf("No file uploaded for %s", image.formKey)})
 			return
 		}
 
-		// Open the file
 		fileContent, err := file.Open()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Unable to open file for %s", image.formKey)})
+			c.JSON(http.StatusInternalServerError,
+				gin.H{"error": fmt.Sprintf("Unable to open file for %s", image.formKey)})
 			return
 		}
 		defer fileContent.Close()
 
-		// Define the object name in GCS
-		objectName := fmt.Sprintf("%s/%d_%s", image.formKey, time.Now().Unix(), file.Filename)
+		objectName := fmt.Sprintf(
+			"%s/%d_%s",
+			image.formKey,
+			time.Now().Unix(),
+			file.Filename)
 
-		// Upload the file to GCS
 		bucket := client.Bucket(config.AppConfig.GscBucketName)
 		object := bucket.Object(objectName)
 		writer := object.NewWriter(ctx)
 		if _, err := io.Copy(writer, fileContent); err != nil {
 
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to upload image %s to GCS", err)})
+			c.JSON(http.StatusInternalServerError,
+				gin.H{"error": fmt.Sprintf("Failed to upload image %s to GCS", err)})
 			return
 		}
 		if err := writer.Close(); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to finalize upload for %s", err)})
+			c.JSON(http.StatusInternalServerError,
+				gin.H{"error": fmt.Sprintf("Failed to finalize upload for %s", err)})
 			return
 		}
 
-		imageURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", config.AppConfig.GscBucketName, objectName)
-		imageURLs[image.formKey] = imageURL
+		imageURLs[image.formKey] = fmt.Sprintf(
+			"https://storage.googleapis.com/%s/%s",
+			config.AppConfig.GscBucketName,
+			objectName)
 	}
 
 	apiResponse := external.CallTryOnAPI(imageURLs["people"], imageURLs["clothes"], imageURLs["mask"])
 
 	c.JSON(apiResponse.Status, apiResponse)
-
 }

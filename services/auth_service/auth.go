@@ -14,7 +14,7 @@ type UserWithToken struct {
 	User  models.Users
 }
 
-func Register(userInfo user_service.UserInfo) (*UserWithToken, error) {
+func Register(userInfo models.UserInfo) (*UserWithToken, error) {
 	user, err := user_service.CreateNewUser(userInfo)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {

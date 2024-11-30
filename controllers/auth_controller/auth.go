@@ -18,7 +18,7 @@ func CheckPhoneNumberExists(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, user_service.Response{
+		c.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Status:  http.StatusBadRequest,
 			Message: "Invalid input",
@@ -32,14 +32,14 @@ func CheckPhoneNumberExists(c *gin.Context) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusOK, user_service.Response{
+			c.JSON(http.StatusOK, models.Response{
 				Success: true,
 				Status:  http.StatusOK,
 				Message: "Phone number does not exist",
 				Data:    gin.H{"exists": false},
 			})
 		} else {
-			c.JSON(http.StatusInternalServerError, user_service.Response{
+			c.JSON(http.StatusInternalServerError, models.Response{
 				Success: false,
 				Status:  http.StatusInternalServerError,
 				Message: "Database error",
@@ -47,7 +47,7 @@ func CheckPhoneNumberExists(c *gin.Context) {
 			})
 		}
 	} else {
-		c.JSON(http.StatusOK, user_service.Response{
+		c.JSON(http.StatusOK, models.Response{
 			Success: true,
 			Status:  http.StatusOK,
 			Message: "Phone number exists",
@@ -68,7 +68,7 @@ func Register(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, user_service.Response{
+		c.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Status:  http.StatusBadRequest,
 			Message: "Invalid input",
@@ -77,7 +77,7 @@ func Register(c *gin.Context) {
 		return
 	}
 	if input.PhoneNumber == "" {
-		c.JSON(http.StatusBadRequest, user_service.Response{
+		c.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Status:  http.StatusBadRequest,
 			Message: "Phone number is required",
@@ -87,7 +87,7 @@ func Register(c *gin.Context) {
 	}
 
 	if !utils.ValidatePhoneNumber(input.PhoneNumber) {
-		c.JSON(http.StatusBadRequest, user_service.Response{
+		c.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Status:  http.StatusBadRequest,
 			Message: "Phone number is wrong",
@@ -96,10 +96,10 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	userWithToken, err := auth_service.Register(user_service.UserInfo(input))
+	userWithToken, err := auth_service.Register(models.UserInfo(input))
 	if err != nil {
 		if err.Error() == "phone number already registered" {
-			c.JSON(http.StatusBadRequest, user_service.Response{
+			c.JSON(http.StatusBadRequest, models.Response{
 				Success: false,
 				Status:  http.StatusBadRequest,
 				Message: "Phone number already registered",
@@ -108,7 +108,7 @@ func Register(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusBadRequest, user_service.Response{
+		c.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Status:  http.StatusBadRequest,
 			Message: err.Error(),
@@ -122,7 +122,7 @@ func Register(c *gin.Context) {
 		"user":  userWithToken.User,
 	}
 
-	c.JSON(http.StatusCreated, user_service.Response{
+	c.JSON(http.StatusCreated, models.Response{
 		Success: true,
 		Status:  http.StatusCreated,
 		Message: "User created successfully",
@@ -137,7 +137,7 @@ func Login(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, user_service.Response{
+		c.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Status:  http.StatusBadRequest,
 			Message: "Invalid input",
@@ -151,7 +151,7 @@ func Login(c *gin.Context) {
 	if err != nil {
 		switch err.Error() {
 		case "phone number not registered":
-			c.JSON(http.StatusUnauthorized, user_service.Response{
+			c.JSON(http.StatusUnauthorized, models.Response{
 				Success: false,
 				Status:  http.StatusUnauthorized,
 				Message: "Phone number not registered",
@@ -159,7 +159,7 @@ func Login(c *gin.Context) {
 			})
 			return
 		case "invalid password":
-			c.JSON(http.StatusUnauthorized, user_service.Response{
+			c.JSON(http.StatusUnauthorized, models.Response{
 				Success: false,
 				Status:  http.StatusUnauthorized,
 				Message: "Invalid password",
@@ -167,7 +167,7 @@ func Login(c *gin.Context) {
 			})
 			return
 		default:
-			c.JSON(http.StatusInternalServerError, user_service.Response{
+			c.JSON(http.StatusInternalServerError, models.Response{
 				Success: false,
 				Status:  http.StatusInternalServerError,
 				Message: "An unexpected error occurred",
@@ -182,7 +182,7 @@ func Login(c *gin.Context) {
 		"user":  userWithToken.User,
 	}
 
-	c.JSON(http.StatusOK, user_service.Response{
+	c.JSON(http.StatusOK, models.Response{
 		Success: true,
 		Status:  http.StatusOK,
 		Message: "Login successful",
@@ -191,10 +191,10 @@ func Login(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
-	var input user_service.UserInfo
+	var input models.UserInfo
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, user_service.Response{
+		c.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Status:  http.StatusBadRequest,
 			Message: "Invalid input",
@@ -206,7 +206,7 @@ func UpdateUser(c *gin.Context) {
 	userInterface, exists := c.Get("user")
 
 	if !exists {
-		c.JSON(http.StatusUnauthorized, user_service.Response{
+		c.JSON(http.StatusUnauthorized, models.Response{
 			Success: false,
 			Status:  http.StatusUnauthorized,
 			Message: "User not authenticated",
@@ -226,7 +226,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	if user.Phone != input.PhoneNumber {
-		c.JSON(http.StatusUnauthorized, user_service.Response{
+		c.JSON(http.StatusUnauthorized, models.Response{
 			Success: false,
 			Status:  http.StatusUnauthorized,
 			Message: "Invalid Token",
@@ -237,7 +237,7 @@ func UpdateUser(c *gin.Context) {
 
 	if err := user_service.UpdateUserByPhoneNumber(input); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, user_service.Response{
+			c.JSON(http.StatusNotFound, models.Response{
 				Success: false,
 				Status:  http.StatusNotFound,
 				Message: "User does not exist",
@@ -248,7 +248,7 @@ func UpdateUser(c *gin.Context) {
 
 	}
 
-	c.JSON(http.StatusOK, user_service.Response{
+	c.JSON(http.StatusOK, models.Response{
 		Success: true,
 		Status:  http.StatusOK,
 		Message: "User updated successfully",
