@@ -29,13 +29,16 @@ CREATE TABLE stores (
 DROP TABLE IF EXISTS items;
 CREATE TABLE items (
                        id SERIAL PRIMARY KEY,
-                       store_id INT NOT NULL,
-                       name VARCHAR(255) NOT NULL,
-                       url TEXT,
-                       image_url TEXT,
-                       price VARCHAR(50)
+                       user_id INT NOT NULL,
+                       item_id VARCHAR(255) NOT NULL,
 );
 
+-- CREATE TABLE wardrobe_items (
+--                                 item_id VARCHAR(255) PRIMARY KEY,                  -- Unique identifier for the wardrobe item
+--                                 user_id VARCHAR(255) REFERENCES user_phones(phone_id),  -- Foreign key to user_phones
+--                                 image_url VARCHAR(255),                            -- URL to the item image (stored in S3)
+--                                 status INT CHECK (status IN (0, 1))                -- 1: available, 0: unavailable
+-- );
 
 -- Pose Images table
 -- CREATE TABLE pose_images (

@@ -169,3 +169,63 @@ func ListStores(c *gin.Context) {
 		"data":    stores,
 	})
 }
+
+func GetStoreItemsById(c *gin.Context) {
+	// Lấy `id` từ tham số URL
+	storeID := c.Param("id")
+
+	// Kiểm tra xem cửa hàng có tồn tại không
+	var store models.Stores
+	if err := models.DB.Where("id = ?", storeID).First(&store).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			response := models.Response{
+				Success: false,
+				Status:  http.StatusNotFound,
+				Message: fmt.Sprintf("Store with ID %s not found", storeID),
+			}
+			c.JSON(http.StatusNotFound, response)
+			return
+		}
+		response := models.Response{
+			Success: false,
+			Status:  http.StatusInternalServerError,
+			Message: "Failed to fetch store",
+			Data:    err.Error(),
+		}
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	// Truy vấn danh sách items của store
+	var items []models.Item
+	if err := models.DB.Where("store_id = ?", storeID).Find(&items).Error; err != nil {
+		response := models.Response{
+			Success: false,
+			Status:  http.StatusInternalServerError,
+			Message: "Failed to fetch items for the store",
+			Data:    err.Error(),
+		}
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	// Tạo phản hồi JSON chứa thông tin cửa hàng và danh sách items
+	response := models.Response{
+		Success: true,
+		Status:  http.StatusOK,
+		Message: "Store and items fetched successfully",
+		Data: gin.H{
+			"store": gin.H{
+				"id":          store.Id,
+				"store_name":  store.StoreName,
+				"phone":       store.Phone,
+				"address":     store.Address,
+				"description": store.Description,
+				"url_image":   store.UrlImage,
+				"status":      store.Status,
+			},
+			"items": items,
+		},
+	}
+	c.JSON(http.StatusOK, response)
+}
