@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -46,8 +47,8 @@ func LoadConfig() {
 		GscFolderMask:      getEnv("GSC_FOLDER_POSH", ""),
 		GscFolderClothes:   getEnv("GSC_FOLDER_CLOTHES", ""),
 		GscKeyFile:         getEnv("GSC_KEY_FILE", ""),
-		HostServer:         getEnv("HOST_SERVER", ""),
-		PortServer:         getEnv("PORT_SERVER", ""),
+		HostServer:         getEnv("HOST_SERVER", "localhost"),
+		PortServer:         getEnv("PORT_SERVER", "8080"),
 		ModelGenAPI:        getEnv("MODEL_GEN_API", ""),
 		GscStoreImage:      getEnv("GSC_STORE_IMAGE", ""),
 	}

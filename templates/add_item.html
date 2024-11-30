@@ -1,52 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Item</title>
-    <script>
-        function showItemFields() {
-            const storeSelect = document.getElementById("store_id").value;
-            const itemFields = document.getElementById("item_fields");
+	<head>
+		<meta charset="UTF-8" />
+		<title>Add Item</title>
+		<script>
+			function showItemFields() {
+				const storeSelect = document.getElementById('store_id').value
+				const itemFields = document.getElementById('item_fields')
 
-            if (storeSelect) {
-                itemFields.style.display = "block";
-            } else {
-                itemFields.style.display = "none";
-            }
-        }
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("success") === "true") {
-            alert("Done! Item added successfully.");
-        }
-    </script>
-</head>
-<body>
-<h1>Add Item to a Store</h1>
-<form action="/stores/add-item" method="post" enctype="multipart/form-data">
-    <label for="store_id">Select Store:</label>
-    <select id="store_id" name="store_id" required onchange="showItemFields()">
-        <option value="">-- Select a Store --</option>
-        {{range .stores}}
-        <option value="{{.Id}}">{{.StoreName}}</option>
-        {{end}}
-    </select><br><br>
+				if (storeSelect) {
+					itemFields.style.display = 'block'
+				} else {
+					itemFields.style.display = 'none'
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<h1>Add Item to a Store</h1>
+		<form action="/stores/add-item" method="post" enctype="multipart/form-data">
+			<label for="store_id">Select Store:</label>
+			<select id="store_id" name="store_id" required onchange="showItemFields()">
+				<option value="">-- Select a Store --</option>
+				{{range .stores}}
+				<option value="{{.Id}}">{{.StoreName}}</option>
+				{{end}}</select
+			><br /><br />
 
-    <!-- Các trường nhập liệu sản phẩm (ẩn mặc định) -->
-    <div id="item_fields" style="display: none;">
-        <label for="name">Item Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+			<!-- Các trường nhập liệu sản phẩm (ẩn mặc định) -->
+			<div id="item_fields" style="display: none">
+				<label for="name">Item Name:</label>
+				<input type="text" id="name" name="name" required /><br /><br />
 
-        <label for="price">Price (optional):</label>
-        <input type="number" id="price" name="price" step="0.01"><br><br>
+				<!-- <label for="price">Price (optional):</label>
+        <input type="number" id="price" name="price" step="0.01"><br><br> -->
 
-        <label for="url">Item URL:</label>
-        <input type="url" id="url" name="url" required><br><br>
+				<label for="url">Item URL:</label>
+				<input type="url" id="url" name="url" required /><br /><br />
 
-        <label for="image">Upload Image:</label>
-        <input type="file" id="image" name="image" accept="image/*" required><br><br>
+				<label for="image">Upload Image:</label>
+				<input type="file" id="image" name="image" accept="image/*" required /><br /><br />
 
-        <button type="submit">Add Item</button>
-    </div>
-</form>
-</body>
+				<button type="submit">Add Item</button>
+			</div>
+		</form>
+	</body>
 </html>
