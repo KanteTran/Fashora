@@ -14,6 +14,10 @@
                 itemFields.style.display = "none";
             }
         }
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("success") === "true") {
+            alert("Done! Item added successfully.");
+        }
     </script>
 </head>
 <body>

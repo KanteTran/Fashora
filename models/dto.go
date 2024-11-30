@@ -28,6 +28,23 @@ func (u *Users) BeforeCreate(*gorm.DB) (err error) {
 	return
 }
 
+type UserInfo struct {
+	PhoneNumber string
+	Password    string
+	UserName    *string
+	Birthday    *time.Time
+	Address     *string
+	DeviceID    *string
+	Gender      *int
+}
+
+type Response struct {
+	Success bool        `json:"success"`
+	Status  int         `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"` // Use `omitempty` to exclude data if it's nil
+}
+
 type Stores struct {
 	Id          string `json:"id" gorm:"primaryKey"`
 	Phone       string `json:"phone" gorm:"unique;not null"`
@@ -52,15 +69,7 @@ type Item struct {
 	Name     string `json:"name" gorm:"not null"`
 	URL      string `json:"url"`
 	ImageURL string `json:"image" `
-	//ProductCode string   `json:"product_code"`
 }
-
-//func (u *Item) BeforeCreate(*gorm.DB) (err error) {
-//	if u.ID == "" {
-//		u.ID = uuid.New().String()
-//	}
-//	return
-//}
 
 type ImageRequest struct {
 	Image1 []byte `json:"image1"` // First image in binary form
@@ -76,4 +85,9 @@ type ImageResponse struct {
 type ServiceAccount struct {
 	PrivateKey  string `json:"private_key"`
 	ClientEmail string `json:"client_email"`
+}
+
+type Image struct {
+	FormKey    string
+	BucketName string
 }

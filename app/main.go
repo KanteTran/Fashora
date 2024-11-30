@@ -45,7 +45,7 @@ func main() {
 	r.GET("/stores/add-item", store_controller.AddItemPage)
 	r.POST("/stores/add-item", store_controller.AddItem)
 
-	r.POST("/try_on/push", try_on_controller.UploadImages)
+	r.POST("/try_on/push", try_on_controller.UploadImagesV2)
 	protected := r.Group("/")
 	protected.Use(middlewares.AuthMiddleware())
 	{

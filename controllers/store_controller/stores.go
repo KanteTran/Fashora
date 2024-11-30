@@ -136,11 +136,15 @@ func AddItem(c *gin.Context) {
 		"url":        item.URL,
 		"image_urls": url,
 	})
+	c.Redirect(http.StatusFound, "/stores/add-item?success=true")
 }
 
 func parseID(input string) int {
 	var id int
-	fmt.Sscanf(input, "%d", &id)
+	_, err := fmt.Sscanf(input, "%d", &id)
+	if err != nil {
+		return 0
+	}
 	return id
 }
 

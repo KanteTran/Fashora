@@ -67,24 +67,7 @@ CREATE TABLE items (
 --                                  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 -- );
 
--- User Shop table
--- CREATE TABLE user_shop (
---                            phone_id VARCHAR(255) PRIMARY KEY,                 -- Primary key
---                            store_name VARCHAR(100),                           -- Store name, nullable
---                            address VARCHAR(255),                              -- Address, nullable
---                            password VARCHAR(255),                             -- Password (should be hashed), nullable
---                            status INT CHECK (status IN (0, 1))                -- 1: active, 0: inactive
--- );
 
--- Store Items table
--- CREATE TABLE store_items (
---                              item_id VARCHAR(255) PRIMARY KEY,                  -- Unique identifier for the item
---                              store_id VARCHAR(255) REFERENCES user_shop(phone_id), -- Foreign key to user_shop
---                              image_url VARCHAR(255),                            -- URL to the item image (stored in S3)
---                              status VARCHAR(50),                                -- e.g., "available", "unavailable"
---                              name_item VARCHAR(100)                             -- Name of the item
--- );
---
 -- -- Count Items table
 -- CREATE TABLE count_items (
 --                              phone_id VARCHAR(255) PRIMARY KEY REFERENCES user_phones(phone_id), -- Foreign key to user_phones
