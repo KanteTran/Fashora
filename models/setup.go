@@ -3,9 +3,10 @@ package models
 import (
 	"fashora-backend/config"
 	"fmt"
+	"log"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 )
 
 var DB *gorm.DB
@@ -25,7 +26,7 @@ func ConnectDatabase() {
 		log.Fatal("Failed to connect to the database:", err)
 	}
 
-	err = database.AutoMigrate(&Users{})
+	err = database.AutoMigrate(&Users{}, &Stores{}, &Item{})
 	if err != nil {
 		return
 	}

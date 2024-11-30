@@ -86,17 +86,16 @@ func AddItemPage(c *gin.Context) {
 }
 
 func AddItem(c *gin.Context) {
-	_, err := c.MultipartForm()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to parse form data"})
-		return
-	}
-
 	storeID := c.PostForm("store_id")
 	name := c.PostForm("name")
 	url := c.PostForm("url")
 
-	file, _ := c.FormFile("image")
+	file, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Could not get image"})
+		return
+	}
+
 	var store models.Stores
 	err = models.DB.Where("id = ?", storeID).First(&store).Error
 	if err != nil {
@@ -114,13 +113,17 @@ func AddItem(c *gin.Context) {
 	}
 
 	fileName := fmt.Sprintf("%s/%s/%s", config.AppConfig.GscBucketName, fmt.Sprintf("stores/%s/items", store.Id), file.Filename)
-	url, err = external.UploadImageToGCS(fileName, file)
+	imageUrl, err := external.UploadImageToGCS(fileName, file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Could not upload image: %s", err)})
+		return
+	}
 
 	item := models.Item{
 		StoreID:  parseID(storeID),
 		Name:     name,
 		URL:      url,
-		ImageURL: url,
+		ImageURL: imageUrl,
 	}
 
 	if err := models.DB.Create(&item).Error; err != nil {
@@ -129,12 +132,12 @@ func AddItem(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"message":    "Item added successfully",
-		"item_id":    item.ID,
-		"store_id":   item.StoreID,
-		"name":       item.Name,
-		"url":        item.URL,
-		"image_urls": url,
+		"message":   "Item added successfully",
+		"item_id":   item.ID,
+		"store_id":  item.StoreID,
+		"name":      item.Name,
+		"url":       item.URL,
+		"image_url": imageUrl,
 	})
 }
 
