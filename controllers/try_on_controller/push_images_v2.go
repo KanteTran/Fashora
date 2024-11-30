@@ -46,13 +46,10 @@ func UploadImagesV2(c *gin.Context) {
 	var wg sync.WaitGroup
 
 	for _, image := range images {
-		fmt.Println(image.BucketName)
-		fmt.Printf(image.FormKey)
 		wg.Add(1)
 		go func(image models.Image) {
 			defer wg.Done()
 
-			// Nhận file từ form
 			file, err := c.FormFile(image.FormKey)
 			if err != nil {
 				results <- struct {
@@ -76,8 +73,6 @@ func UploadImagesV2(c *gin.Context) {
 				return
 			}
 			defer fileContent.Close()
-			//fmt.Println("oke den day roi ne")
-			// Tạo objectName cho file trong GCS
 			objectName := fmt.Sprintf("%s/%d_%s", image.BucketName, time.Now().Unix(), file.Filename)
 			bucket := client.Bucket(config.AppConfig.GscBucketName)
 			object := bucket.Object(objectName)
