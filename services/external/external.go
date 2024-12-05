@@ -17,7 +17,7 @@ import (
 	"os"
 )
 
-func CallTryOnAPI(personImageURL, clothImageURL, maskURL string) APIResponse {
+func CallTryOnAPI(personImageURL, clothImageURL, maskURL string) models.APIResponse {
 	// Create a multipart form request
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -32,19 +32,24 @@ func CallTryOnAPI(personImageURL, clothImageURL, maskURL string) APIResponse {
 
 	for key, value := range fields {
 		if err := writer.WriteField(key, value); err != nil {
-			return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to add field '%s': %v", key, err))
+			return models.CreateErrorResponse(
+				http.StatusInternalServerError,
+				fmt.Sprintf("failed to add field '%s': %v", key, err))
 		}
 	}
 
 	// Close the writer
 	if err := writer.Close(); err != nil {
-		return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to close writer: %v", err))
+		return models.CreateErrorResponse(
+			http.StatusInternalServerError, fmt.Sprintf("failed to close writer: %v", err))
 	}
 
 	// Create the HTTP request
 	req, err := http.NewRequest("POST", config.AppConfig.ModelGenAPI, body)
 	if err != nil {
-		return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to create request: %v", err))
+		return models.CreateErrorResponse(
+			http.StatusInternalServerError,
+			fmt.Sprintf("failed to create request: %v", err))
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
@@ -52,31 +57,38 @@ func CallTryOnAPI(personImageURL, clothImageURL, maskURL string) APIResponse {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return createErrorResponse(http.StatusBadGateway, fmt.Sprintf("failed to send request: %v", err))
+		return models.CreateErrorResponse(
+			http.StatusBadGateway,
+			fmt.Sprintf("failed to send request: %v", err))
 	}
 	defer resp.Body.Close()
 
 	// Read response body
 	bodyNew, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to read response body: %v", err))
+		return models.CreateErrorResponse(
+			http.StatusInternalServerError,
+			fmt.Sprintf("failed to read response body: %v", err))
 	}
 
 	// Decode JSON response
 	var responseJSON map[string]interface{}
 	err = json.Unmarshal(bodyNew, &responseJSON)
 	if err != nil {
-		return createErrorResponse(http.StatusInternalServerError, fmt.Sprintf("failed to decode JSON: %v", err))
+		return models.CreateErrorResponse(
+			http.StatusInternalServerError,
+			fmt.Sprintf("failed to decode JSON: %v", err))
 	}
 
 	// Extract "result_url"
 	resultURL, ok := responseJSON["result_url"].(string)
 	if !ok {
-		return createErrorResponse(http.StatusInternalServerError, "result_url not found in response or is not a string")
+		return models.CreateErrorResponse(
+			http.StatusInternalServerError,
+			"result_url not found in response or is not a string")
 	}
 
-	// Return a structured response
-	return APIResponse{
+	return models.APIResponse{
 		Success: true,
 		Status:  http.StatusOK,
 		Message: "Successfully fetched result URL",
@@ -86,16 +98,8 @@ func CallTryOnAPI(personImageURL, clothImageURL, maskURL string) APIResponse {
 	}
 }
 
-func createErrorResponse(status int, message string) APIResponse {
-	return APIResponse{
-		Success: false,
-		Status:  status,
-		Message: message,
-		Data:    nil,
-	}
-}
 func RefreshTokenGcp() string {
-	credentialsFilePath := config.AppConfig.GscKeyFile // Update with your actual file path
+	credentialsFilePath := config.AppConfig.GscKeyFile
 
 	data, err := os.ReadFile(credentialsFilePath)
 	if err != nil {
@@ -115,13 +119,6 @@ func RefreshTokenGcp() string {
 	}
 
 	return token.AccessToken
-}
-
-type APIResponse struct {
-	Status  int `json:"status"`
-	Success bool
-	Message string
-	Data    map[string]string
 }
 
 func HomePage(c *gin.Context) {

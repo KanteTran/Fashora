@@ -63,6 +63,15 @@ func (u *Stores) BeforeCreate(*gorm.DB) (err error) {
 	return
 }
 
+func CreateErrorResponse(status int, message string) APIResponse {
+	return APIResponse{
+		Success: false,
+		Status:  status,
+		Message: message,
+		Data:    nil,
+	}
+}
+
 type Item struct {
 	ID       int    `json:"id" gorm:"primaryKey;autoIncrement"`
 	StoreID  string `json:"store_id" gorm:"not null"`
@@ -90,4 +99,11 @@ type ServiceAccount struct {
 type Image struct {
 	FormKey    string
 	BucketName string
+}
+
+type APIResponse struct {
+	Status  int `json:"status"`
+	Success bool
+	Message string
+	Data    map[string]string
 }
