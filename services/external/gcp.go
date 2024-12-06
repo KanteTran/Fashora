@@ -16,7 +16,7 @@ import (
 
 func CreateFoldersIfNotExists(bucketName string, folderPath string) error {
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(config.AppConfig.GscKeyFile))
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(config.AppConfig.GCS.KeyFile))
 	if err != nil {
 		return fmt.Errorf("failed to create gsc keyfile: %v", err)
 	}
@@ -70,7 +70,7 @@ func UploadImageToGCS(fileURL string, file *multipart.FileHeader) (string, error
 	bucketName := parts[0]
 	objectPath := parts[1]
 
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(config.AppConfig.GscKeyFile))
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(config.AppConfig.GCS.KeyFile))
 	if err != nil {
 		return "", fmt.Errorf("failed to create GCS client: %v", err)
 	}

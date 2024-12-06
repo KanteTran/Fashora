@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-var jwtKey = []byte(config.AppConfig.JWTSecret)
+var jwtKey = []byte(config.AppConfig.JWT.Secret)
 
 func GenerateJWT(phoneID string) (string, error) {
-	expiredTime, _ := strconv.Atoi(config.AppConfig.JwtExpirationHours)
+	expiredTime, _ := strconv.Atoi(config.AppConfig.JWT.ExpirationHours)
 
 	claims := &jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiredTime) * time.Hour)),

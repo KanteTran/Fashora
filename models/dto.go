@@ -8,17 +8,29 @@ import (
 )
 
 type Users struct {
-	Id           string         `gorm:"primaryKey;size:255"`       // Primary key, required
-	Phone        string         `gorm:"size:255;unique"`           // Primary key, required
-	PasswordHash string         `gorm:"size:255"`                  // Hashed password
-	UserName     *string        `gorm:"size:100"`                  // Username, optional (nullable)
-	Birthday     *time.Time     `gorm:"type:date"`                 // Birthday, optional (nullable)
-	Address      *string        `gorm:"size:255"`                  // Address, optional (nullable)
-	DeviceID     *string        `gorm:"size:100"`                  // Device identifier, optional (nullable)
+	Id           string         `gorm:"primaryKey;size:255"`
+	Phone        string         `gorm:"size:255;unique"`
+	PasswordHash string         `gorm:"size:255"`
+	UserName     *string        `gorm:"size:100"`
+	Birthday     *time.Time     `gorm:"type:date"`
+	Address      *string        `gorm:"size:255"`
+	DeviceID     *string        `gorm:"size:100"`
 	Gender       *int           `gorm:"check:gender IN (0, 1, 2)"` // Gender: 0 (male), 1 (female), 2 (other), optional
-	CreatedAt    time.Time      `gorm:"autoCreateTime"`            // Automatically sets time on creation
-	UpdatedAt    time.Time      `gorm:"autoUpdateTime"`            // Automatically updates time on modification
-	DeletedAt    gorm.DeletedAt `gorm:"index"`                     // Soft delete field, optional
+	CreatedAt    time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt    time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt    gorm.DeletedAt `gorm:"index"`
+}
+
+type Inventory struct {
+	ID        uint           `gorm:"primaryKey;autoIncrement" json:"id"`
+	StoreID   string         `gorm:"size:255;not null" json:"store_id"`
+	Name      string         `gorm:"size:255;not null" json:"name"`
+	URL       string         `gorm:"size:255;not null" json:"url"`
+	ImageURL  string         `gorm:"size:255;not null" json:"image_url"`
+	UserID    string         `gorm:"size:255;not null" json:"user_id"`
+	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
 func (u *Users) BeforeCreate(*gorm.DB) (err error) {
@@ -42,7 +54,7 @@ type Response struct {
 	Success bool        `json:"success"`
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"` // Use `omitempty` to exclude data if it's nil
+	Data    interface{} `json:"data,omitempty"`
 }
 
 type Stores struct {
@@ -63,15 +75,6 @@ func (u *Stores) BeforeCreate(*gorm.DB) (err error) {
 	return
 }
 
-func CreateErrorResponse(status int, message string) APIResponse {
-	return APIResponse{
-		Success: false,
-		Status:  status,
-		Message: message,
-		Data:    nil,
-	}
-}
-
 type Item struct {
 	ID       int    `json:"id" gorm:"primaryKey;autoIncrement"`
 	StoreID  string `json:"store_id" gorm:"not null"`
@@ -81,19 +84,14 @@ type Item struct {
 }
 
 type ImageRequest struct {
-	Image1 []byte `json:"image1"` // First image in binary form
-	Image2 []byte `json:"image2"` // Second image in binary form
-	Image3 []byte `json:"image3"` // Third image in binary form
+	Image1 []byte `json:"image1"`
+	Image2 []byte `json:"image2"`
+	Image3 []byte `json:"image3"`
 }
 
 type ImageResponse struct {
 	Status   string `json:"status"`
-	ImageURL string `json:"image_url"` // Processed image URL or data
-}
-
-type ServiceAccount struct {
-	PrivateKey  string `json:"private_key"`
-	ClientEmail string `json:"client_email"`
+	ImageURL string `json:"image_url"`
 }
 
 type Image struct {
@@ -101,9 +99,7 @@ type Image struct {
 	BucketName string
 }
 
-type APIResponse struct {
-	Status  int `json:"status"`
-	Success bool
-	Message string
-	Data    map[string]string
+type UserWithToken struct {
+	Token string
+	User  Users
 }
