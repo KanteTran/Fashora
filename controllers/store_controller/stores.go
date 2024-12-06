@@ -43,14 +43,14 @@ func CreateStore(c *gin.Context) {
 		return
 	}
 
-	err = external.CreateFoldersIfNotExists(config.AppConfig.GscBucketName, fmt.Sprintf("stores/%s", store.Id))
+	err = external.CreateFoldersIfNotExists(config.AppConfig.GCS.BucketName, fmt.Sprintf("stores/%s", store.Id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create store's cloud folder"})
 		tx.Rollback()
 		return
 	}
 
-	fileName := fmt.Sprintf("%s/%s/%s", config.AppConfig.GscBucketName, fmt.Sprintf("stores/%s", store.Id), file.Filename)
+	fileName := fmt.Sprintf("%s/%s/%s", config.AppConfig.GCS.BucketName, fmt.Sprintf("stores/%s", store.Id), file.Filename)
 	url, err := external.UploadImageToGCS(fileName, file)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Could not upload image: %s", err)})
@@ -106,13 +106,13 @@ func AddItem(c *gin.Context) {
 		}
 	}
 
-	err = external.CreateFoldersIfNotExists(config.AppConfig.GscBucketName, fmt.Sprintf("stores/%s/items", storeID))
+	err = external.CreateFoldersIfNotExists(config.AppConfig.GCS.BucketName, fmt.Sprintf("stores/%s/items", storeID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Could not create store's items folder: %s", err)})
 		return
 	}
 
-	fileName := fmt.Sprintf("%s/%s/%s", config.AppConfig.GscBucketName, fmt.Sprintf("stores/%s/items", store.Id), file.Filename)
+	fileName := fmt.Sprintf("%s/%s/%s", config.AppConfig.GCS.BucketName, fmt.Sprintf("stores/%s/items", store.Id), file.Filename)
 	imageUrl, err := external.UploadImageToGCS(fileName, file)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Could not upload image: %s", err)})
@@ -189,7 +189,6 @@ func GetStoreItemsById(c *gin.Context) {
 		return
 	}
 
-	// Truy vấn danh sách items của store
 	var items []models.Item
 	if err := models.DB.Where("store_id = ?", storeID).Find(&items).Error; err != nil {
 		response := models.Response{
@@ -202,7 +201,6 @@ func GetStoreItemsById(c *gin.Context) {
 		return
 	}
 
-	// Tạo phản hồi JSON chứa thông tin cửa hàng và danh sách items
 	response := models.Response{
 		Success: true,
 		Status:  http.StatusOK,
