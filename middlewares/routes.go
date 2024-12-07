@@ -38,6 +38,10 @@ func SetupProtectedRoutes(r *gin.Engine) {
 		protected.POST("/inventory/add-item", inventory_controller.AddInventory)
 		protected.GET("/inventory/all-items", inventory_controller.ListInventories)
 		protected.DELETE("/inventory/del-item", inventory_controller.DeleteInventory)
+		protected.GET("/stores/list-all-store", store_controller.ListStores)
+		protected.GET("/stores/get_all_items_store", store_controller.GetStoreItemsById)
+		protected.GET("/stores/get_only_items", store_controller.GetItemsById)
+
 		// Add more authenticated routes here if needed
 	}
 }
