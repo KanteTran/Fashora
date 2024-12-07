@@ -24,13 +24,16 @@ func CheckPhoneNumberExists(c *gin.Context) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			utils.SendSuccessResponse(c, http.StatusOK, "Phone number does not exist", nil)
+			// Phone number does not exist
+			utils.SendSuccessResponse(c, http.StatusOK, "Phone number does not exist", gin.H{"exists": false})
 			return
 		} else {
-			utils.SendErrorResponse(c, http.StatusInternalServerError, "Something when query DB went wrong")
+			// Database query error
+			utils.SendErrorResponse(c, http.StatusInternalServerError, "Something went wrong while querying the database")
 			return
 		}
-	} else {
-		utils.SendSuccessResponse(c, http.StatusOK, "Phone number exists", nil)
 	}
+
+	// Phone number exists
+	utils.SendSuccessResponse(c, http.StatusOK, "Phone number exists", gin.H{"exists": true})
 }
