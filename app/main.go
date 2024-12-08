@@ -5,10 +5,11 @@ import (
 	"fashora-backend/middlewares"
 	"fashora-backend/models"
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"log"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -25,6 +26,8 @@ func main() {
 		AllowCredentials: true,                                                // Allow credentials
 		MaxAge:           12 * time.Hour,                                      // Max age for preflight requests
 	}))
+
+	r.Use(middlewares.SetupApiDocsMiddleware())
 
 	middlewares.SetupPublicRoutes(r)
 	middlewares.SetupProtectedRoutes(r)

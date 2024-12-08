@@ -1,0 +1,608 @@
+openapi: '3.0.3'
+info:
+  title: Fashora API
+  version: '1.0'
+tags:
+  - name: Auth API
+    description: APIs for authenticating users
+  - name: Store API
+    description: APIs for managing stores and store's items
+  - name: Try on API
+    description: APIs for trying on clothes
+  - name: Inventory API
+    description: APIs for managing user's inventory
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth API
+      summary: Register a new user
+      description: API to signup a new user using their phone number.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      status:
+                        type: integer
+                        enum: [201]
+                      data:
+                        $ref: '#/components/schemas/UserTokenData'
+        '400':
+          $ref: '#/components/responses/400default'
+        '500':
+          $ref: '#/components/responses/500default'
+  /auth/login:
+    post:
+      tags:
+        - Auth API
+      summary: Login an user
+      description: API to login an user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      status:
+                        type: integer
+                        enum: [200]
+                      data:
+                        $ref: '#/components/schemas/UserTokenData'
+        '400':
+          $ref: '#/components/responses/400default'
+        '500':
+          $ref: '#/components/responses/500default'
+  /auth/check_phone:
+    post:
+      tags:
+        - Auth API
+      summary: Check registered phone number
+      description: API to check if a phone number is already registered with an user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckPhoneRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      status:
+                        type: integer
+                        enum: [200]
+                      data:
+                        $ref: '#/components/schemas/CheckPhoneResponse'
+        '400':
+          $ref: '#/components/responses/400default'
+        '500':
+          $ref: '#/components/responses/500default'
+  /auth/update/{id}:
+    patch:
+      tags:
+        - Auth API
+      summary: Update an existing user
+      description: API to update an user using user's id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Id of user to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      status:
+                        type: integer
+                        enum: [200]
+        '400':
+          $ref: '#/components/responses/400default'
+        '401':
+          $ref: '#/components/responses/401default'
+        '500':
+          $ref: '#/components/responses/500default'
+  /stores/create-store:
+    post:
+      tags:
+        - Store API
+      summary: Create new store
+      description: API for creating new store.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateStoreRequest'
+      responses:
+        # '201':
+        #   description: Created
+        #   content:
+        #     application/json:
+        #       schema:
+        #         allOf:
+        #           - $ref: '#/components/schemas/SuccessResponse'
+        #           - properties:
+        #               status:
+        #                 type: integer
+        #                 enum: [201]
+        #               data:
+        #                 $ref: '#/components/schemas/CreateStoreResponse'
+        '400':
+          $ref: '#/components/responses/400default'
+        # '401':
+        #   $ref: '#/components/responses/401default'
+        '500':
+          $ref: '#/components/responses/500default'
+  /stores/add-item:
+    post:
+      tags:
+        - Store API
+      summary: Add an item to existing store
+      description: API for adding an item to an existing store.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddStoreItemRequest'
+      responses:
+        # '201':
+        #   description: Created
+        #   content:
+        #     application/json:
+        #       schema:
+        #         allOf:
+        #           - $ref: '#/components/schemas/SuccessResponse'
+        #           - properties:
+        #               status:
+        #                 type: integer
+        #                 enum: [201]
+        #               data:
+        #                 $ref: '#/components/schemas/CreateStoreResponse'
+        '400':
+          $ref: '#/components/responses/400default'
+        # '401':
+        #   $ref: '#/components/responses/401default'
+        '500':
+          $ref: '#/components/responses/500default'
+  /stores/list-all-store:
+    get:
+      tags:
+        - Store API
+      summary: Get list stores
+      description: API for getting a list of all current stores.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      status:
+                        type: integer
+                        enum: [200]
+                      data:
+                        $ref: '#/components/schemas/GetStoresResponse'
+        '401':
+          $ref: '#/components/responses/401default'
+        '500':
+          $ref: '#/components/responses/500default'
+  /stores/get_all_item_store:
+    get:
+      tags:
+        - Store API
+      summary: Get items of a store
+      description: API for getting a list of all current items of a specific store.
+      parameters:
+        - name: id
+          description: Id of store to get items
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      status:
+                        type: integer
+                        enum: [200]
+                      data:
+                        $ref: '#/components/schemas/GetStoreItemsResponse'
+        '401':
+          $ref: '#/components/responses/401default'
+        '404':
+          $ref: '#/components/responses/404default'
+        '500':
+          $ref: '#/components/responses/500default'
+  /stores/get_only_items:
+    get:
+      tags:
+        - Store API
+      summary: Get an item
+      description: API for getting a specific item.
+      parameters:
+        - name: id
+          description: Id of item
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      status:
+                        type: integer
+                        enum: [200]
+                      data:
+                        $ref: '#/components/schemas/StoreItem'
+        '401':
+          $ref: '#/components/responses/401default'
+        '404':
+          $ref: '#/components/responses/404default'
+        '500':
+          $ref: '#/components/responses/500default'
+  # /inventory/add-item:
+  #   post:
+  #     tags:
+  #       - Inventory API
+  #     summary: Add an item to user's inventory
+  #     description: API for adding an item to a specific user's inventory.
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         multipart/form-data:
+  #           schema:
+  #             $ref: '#/components/schemas/AddStoreItemRequest'
+  #     responses:
+  #       # '201':
+  #       #   description: Created
+  #       #   content:
+  #       #     application/json:
+  #       #       schema:
+  #       #         allOf:
+  #       #           - $ref: '#/components/schemas/SuccessResponse'
+  #       #           - properties:
+  #       #               status:
+  #       #                 type: integer
+  #       #                 enum: [201]
+  #       #               data:
+  #       #                 $ref: '#/components/schemas/CreateStoreResponse'
+  #       '400':
+  #         $ref: '#/components/responses/400default'
+  #       # '401':
+  #       #   $ref: '#/components/responses/401default'
+  #       '500':
+  #         $ref: '#/components/responses/500default'
+  /try_on/push:
+    post:
+      tags:
+        - Try on API
+      summary: Try on clothes
+      description: API for user to try on clothes using their own image.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TryOnRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      status:
+                        type: integer
+                        enum: [200]
+                      data:
+                        $ref: '#/components/schemas/TryOnResponse'
+        '400':
+          $ref: '#/components/responses/400default'
+        '401':
+          $ref: '#/components/responses/401default'
+        '500':
+          $ref: '#/components/responses/500default'
+        '502':
+          $ref: '#/components/responses/502default'
+components:
+  responses:
+    400default:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - properties:
+                  status:
+                    enum: [400]
+    401default:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - properties:
+                  status:
+                    enum: [401]
+    404default:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - properties:
+                  status:
+                    enum: [404]
+    500default:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - properties:
+                  status:
+                    enum: [500]
+    502default:
+      description: Bad gateway
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - properties:
+                  status:
+                    enum: [502]
+  schemas:
+    CreateUserRequest:
+      type: object
+      required:
+        - phone_number
+        - password
+      allOf:
+        - $ref: '#/components/schemas/UpdateUserRequest'
+    UserTokenData:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+    UpdateUserRequest:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/User'
+    LoginUserRequest:
+      type: object
+      required:
+        - phone_number
+        - password
+      properties:
+        phone_number:
+          type: string
+          pattern: ^\d{10,11}$
+          example: '0961572891'
+        password:
+          type: string
+    CheckPhoneRequest:
+      type: object
+      required:
+        - phone_number
+      properties:
+        phone_number:
+          type: string
+          pattern: ^\d{10,11}$
+          example: '0961572891'
+    CheckPhoneResponse:
+      type: object
+      properties:
+        exist:
+          type: boolean
+    CreateStoreRequest:
+      type: object
+      required:
+        - phone
+        - store_name
+        - address
+        - image
+      allOf:
+        - $ref: '#/components/schemas/Store'
+    AddStoreItemRequest:
+      type: object
+      required:
+        - store_id
+        - name
+        - image
+      allOf:
+        - $ref: '#/components/schemas/StoreItem'
+    GetStoresResponse:
+      type: array
+      items:
+        type: object
+        $ref: '#/components/schemas/Store'
+    GetStoreItemsResponse:
+      type: object
+      properties:
+        store:
+          $ref: '#/components/schemas/Store'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StoreItem'
+    TryOnRequest:
+      type: object
+      properties:
+        people:
+          type: string
+          format: byte
+        clothes:
+          type: string
+          format: byte
+        mask:
+          type: string
+          format: byte
+    TryOnResponse:
+      type: object
+      properties:
+        result_url:
+          type: string
+          format: uri
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        phone_number:
+          type: string
+          pattern: ^\d{10,11}$
+          example: '0961572891'
+        password:
+          type: string
+          writeOnly: true
+        password_hash:
+          type: string
+          readOnly: true
+        user_name:
+          type: string
+        birthday:
+          type: string
+          format: date-time
+        address:
+          type: string
+        device_id:
+          type: string
+        gender:
+          type: integer
+          enum: [0, 1, 2]
+          description: |
+            Gender of user:
+              - male: 0
+              - female: 1
+              - other: 2
+    Store:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        phone:
+          type: string
+          pattern: ^\d{10,11}$
+          example: '0961572891'
+        store_name:
+          type: string
+        address:
+          type: string
+        description:
+          type: string
+        status:
+          type: integer
+        image:
+          type: string
+          format: byte
+          writeOnly: true
+        url_image:
+          type: string
+          format: uri
+          readOnly: true
+    StoreItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          readOnly: true
+        store_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+        image:
+          oneOf:
+            - type: string
+              format: binary
+              writeOnly: true
+            - type: string
+              format: uri
+              readOnly: true
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        message:
+          type: string
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
