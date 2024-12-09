@@ -18,7 +18,6 @@ func main() {
 	config.LoadConfig()
 	models.ConnectDatabase()
 
-	// CORS Middleware
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},                                       // Allow all origins
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},   // Allow methods
@@ -27,10 +26,9 @@ func main() {
 		MaxAge:           12 * time.Hour,                                      // Max age for preflight requests
 	}))
 
-	r.Use(middlewares.SetupApiDocsMiddleware())
-
 	middlewares.SetupPublicRoutes(r)
 	middlewares.SetupProtectedRoutes(r)
+	middlewares.SetupApiDocs(r)
 
 	// Start server
 	go func() {

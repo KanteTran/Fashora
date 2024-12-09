@@ -6,7 +6,7 @@ import (
 	ginredoc "github.com/mvrilo/go-redoc/gin"
 )
 
-func SetupApiDocsMiddleware() gin.HandlerFunc {
+func SetupApiDocs(r *gin.Engine) {
 	doc := redoc.Redoc{
 		Title:    "Fashora API Docs",
 		SpecFile: "./api-docs/openapi.yaml",
@@ -14,5 +14,6 @@ func SetupApiDocsMiddleware() gin.HandlerFunc {
 		DocsPath: "/api-docs",
 	}
 
-	return ginredoc.New(doc)
+	r.GET(doc.SpecPath, ginredoc.New(doc))
+	r.GET(doc.DocsPath, ginredoc.New(doc))
 }
