@@ -10,8 +10,9 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/google/uuid v1.6.0
-	github.com/googleapis/enterprise-certificate-proxy v0.3.4
 	github.com/joho/godotenv v1.5.1
+	github.com/mvrilo/go-redoc v0.1.5
+	github.com/mvrilo/go-redoc/gin v0.0.0-20240120021923-101384bb3acd
 	golang.org/x/crypto v0.29.0
 	golang.org/x/oauth2 v0.23.0
 	google.golang.org/api v0.203.0
@@ -50,6 +51,7 @@ require (
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/s2a-go v0.1.8 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
 	github.com/googleapis/gax-go/v2 v2.13.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
@@ -63,8 +65,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/mvrilo/go-redoc v0.1.5 // indirect
-	github.com/mvrilo/go-redoc/gin v0.0.0-20240120021923-101384bb3acd // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect

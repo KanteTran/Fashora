@@ -1,0 +1,17 @@
+run:
+  tests: false
+linters-settings:
+  goimports:
+    local-prefixes: jsin
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - typecheck
+    - unused
+    - gofmt
+    - goimports
+    - lll
