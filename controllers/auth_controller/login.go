@@ -1,10 +1,12 @@
 package auth_controller
 
 import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	"fashora-backend/services/auth_service"
 	"fashora-backend/utils"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type LoginInput struct {
@@ -37,9 +39,9 @@ func Login(c *gin.Context) {
 func handleLoginError(c *gin.Context, err error) {
 	switch err.Error() {
 	case "phone number not registered":
-		utils.SendErrorResponse(c, http.StatusUnauthorized, "Phone number not registered")
+		utils.SendErrorResponse(c, http.StatusNotFound, "Phone number not registered")
 	case "invalid password":
-		utils.SendErrorResponse(c, http.StatusUnauthorized, "Invalid password")
+		utils.SendErrorResponse(c, http.StatusNotFound, "Invalid password")
 	default:
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "An unexpected error occurred")
 	}

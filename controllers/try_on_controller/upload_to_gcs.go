@@ -1,15 +1,20 @@
 package try_on_controller
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
-	"fashora-backend/models"
 	"fmt"
 	"mime/multipart"
 	"sync"
+
+	"cloud.google.com/go/storage"
+
+	"fashora-backend/models"
 )
 
-func uploadImagesToGCS(ctx context.Context, client *storage.Client, files map[string]*multipart.FileHeader, images []models.Image) (map[string]string, error) {
+func uploadImagesToGCS(ctx context.Context,
+	client *storage.Client,
+	files map[string]*multipart.FileHeader,
+	images []models.Image) (map[string]string, error) {
 	var wg sync.WaitGroup
 	results := make(chan struct {
 		formKey  string

@@ -1,12 +1,13 @@
 package middlewares
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"fashora-backend/controllers/auth_controller"
 	"fashora-backend/controllers/inventory_controller"
 	"fashora-backend/controllers/store_controller"
 	"fashora-backend/controllers/try_on_controller"
 	"fashora-backend/services/external"
-	"github.com/gin-gonic/gin"
 )
 
 func SetupPublicRoutes(r *gin.Engine) {

@@ -2,11 +2,13 @@ package auth_controller
 
 import (
 	"errors"
-	"fashora-backend/models"
-	"fashora-backend/utils"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"net/http"
+
+	"fashora-backend/models"
+	"fashora-backend/utils"
 )
 
 func CheckPhoneNumberExists(c *gin.Context) {

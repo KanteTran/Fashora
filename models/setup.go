@@ -1,11 +1,13 @@
 package models
 
 import (
-	"fashora-backend/config"
 	"fmt"
+	"log"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
+
+	"fashora-backend/config"
 )
 
 var DB *gorm.DB
@@ -30,4 +32,5 @@ func ConnectDatabase() {
 		return
 	}
 	DB = database
+	log.Println("Successfully connected to the database")
 }

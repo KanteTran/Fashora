@@ -2,9 +2,11 @@ package auth_service
 
 import (
 	"errors"
+
 	"fashora-backend/models"
 	"fashora-backend/services/user_service"
 	"fashora-backend/utils"
+
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )

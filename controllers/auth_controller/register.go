@@ -1,12 +1,14 @@
 package auth_controller
 
 import (
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+
 	"fashora-backend/models"
 	"fashora-backend/services/auth_service"
 	"fashora-backend/utils"
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"time"
 )
 
 type RegisterInput struct {
@@ -19,7 +21,6 @@ type RegisterInput struct {
 	Gender      *int       `json:"gender"` // 0: male, 1: female, 2: other
 }
 
-// Register handles user registration
 func Register(c *gin.Context) {
 	var input RegisterInput
 	if err := c.ShouldBindJSON(&input); err != nil {

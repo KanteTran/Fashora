@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fashora-backend/config"
-	"fashora-backend/utils"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/oauth2/google"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2/google"
+
+	"fashora-backend/config"
+	"fashora-backend/utils"
 )
 
 // CallTryOnAPI sends images to the Try-On API and retrieves the result URL
@@ -124,5 +126,4 @@ func processAPIResponse(c *gin.Context, resp *http.Response) {
 	utils.SendSuccessResponse(c, http.StatusOK, "Successfully fetched result URL", map[string]string{
 		"result_url": resultURL,
 	})
-	return
 }

@@ -2,8 +2,10 @@ package auth_service
 
 import (
 	"errors"
-	"fashora-backend/models"
+
 	"github.com/gin-gonic/gin"
+
+	"fashora-backend/models"
 )
 
 func GetAuthenticatedUser(c *gin.Context) (models.Users, error) {

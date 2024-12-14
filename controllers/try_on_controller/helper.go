@@ -1,17 +1,19 @@
 package try_on_controller
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
-	"fashora-backend/config"
-	"fashora-backend/models"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/oauth2"
-	"google.golang.org/api/option"
 	"io"
 	"mime/multipart"
 	"time"
+
+	"cloud.google.com/go/storage"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
+	"google.golang.org/api/option"
+
+	"fashora-backend/config"
+	"fashora-backend/models"
 )
 
 func readFilesFromRequest(c *gin.Context, images []models.Image) (map[string]*multipart.FileHeader, error) {
@@ -26,7 +28,11 @@ func readFilesFromRequest(c *gin.Context, images []models.Image) (map[string]*mu
 	return files, nil
 }
 
-func uploadToGCS(ctx context.Context, client *storage.Client, fileContent io.Reader, formKey, fileName string) (string, error) {
+func uploadToGCS(ctx context.Context,
+	client *storage.Client,
+	fileContent io.Reader,
+	formKey,
+	fileName string) (string, error) {
 	objectName := fmt.Sprintf("%s/%d_%s", formKey, time.Now().Unix(), fileName)
 	bucket := client.Bucket(config.AppConfig.GCS.BucketName)
 	object := bucket.Object(objectName)

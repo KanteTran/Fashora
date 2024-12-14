@@ -23,11 +23,12 @@ type Users struct {
 
 type Inventory struct {
 	ID        uint           `gorm:"primaryKey;autoIncrement" json:"id"`
-	StoreID   string         `gorm:"size:255;not null" json:"store_id"`
-	Name      string         `gorm:"size:255;not null" json:"name"`
-	URL       string         `gorm:"size:255;not null" json:"url"`
-	ImageURL  string         `gorm:"size:255;not null" json:"image_url"`
-	UserID    string         `gorm:"size:255;not null" json:"user_id"`
+	StoreID   string         `gorm:"size:255" json:"store_id"`
+	ItemID    string         `gorm:"size:255" json:"item_id"`
+	Name      string         `gorm:"size:255" json:"name"`
+	URL       string         `gorm:"size:255" json:"url"`
+	ImageURL  string         `gorm:"size:2555" json:"image_url"`
+	UserID    string         `gorm:"size:255" json:"user_id"`
 	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
@@ -66,6 +67,7 @@ type Stores struct {
 	Password    string `json:"password" gorm:"not null"`
 	Status      int    `json:"status" gorm:"not null"`
 	UrlImage    string `json:"url_image" gorm:"not null"`
+	Type        string `json:"type" gorm:"not null;default:'1'"`
 }
 
 func (u *Stores) BeforeCreate(*gorm.DB) (err error) {

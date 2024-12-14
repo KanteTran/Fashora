@@ -2,38 +2,43 @@ package inventory_controller
 
 import (
 	"errors"
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	"fashora-backend/models"
 	"fashora-backend/services/auth_service"
 	"fashora-backend/utils"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-	"net/http"
 )
 
 func AddInventory(c *gin.Context) {
-	storeID := c.PostForm("store_id")
-	name := c.PostForm("name")
-	url := c.PostForm("url")
-	imageURL := c.PostForm("image_url")
-	userID := c.PostForm("user_id")
+	itemID := c.PostForm("item_id")
 	user, err := auth_service.GetAuthenticatedUser(c)
 	if err != nil {
 		utils.SendErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return
 	}
-	userID = user.Id
+	userID := user.Id
 
-	if storeID == "" || name == "" || url == "" || imageURL == "" || userID == "" {
-		utils.SendErrorResponse(c, http.StatusBadRequest, "Missing required fields (store_id, name, url, image_url, or user_id)")
+	if itemID == "" {
+		utils.SendErrorResponse(c, http.StatusBadRequest, "Missing required fields: item_id")
+		return
+	}
+
+	var item models.Item
+	if err := models.DB.Where("id = ?", itemID).First(&item).Error; err != nil {
+		utils.SendErrorResponse(c, http.StatusNotFound, "Item not found")
 		return
 	}
 
 	inventory := models.Inventory{
-		StoreID:  storeID,
-		Name:     name,
-		URL:      url,
-		ImageURL: imageURL,
+		ItemID:   itemID,
+		StoreID:  item.StoreID,
+		Name:     item.Name,
+		URL:      item.URL,
+		ImageURL: item.ImageURL,
 		UserID:   userID,
 	}
 
@@ -43,9 +48,7 @@ func AddInventory(c *gin.Context) {
 	}
 
 	utils.SendSuccessResponse(c, http.StatusCreated, "Inventory added successfully", inventory)
-	return
 }
-
 func DeleteInventory(c *gin.Context) {
 	id := c.PostForm("item_id")
 	user, err := auth_service.GetAuthenticatedUser(c)
@@ -87,5 +90,4 @@ func ListInventories(c *gin.Context) {
 	}
 
 	utils.SendSuccessResponse(c, http.StatusOK, "Image URLs fetched successfully", inventories)
-	return
 }

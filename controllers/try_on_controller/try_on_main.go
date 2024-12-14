@@ -3,13 +3,15 @@ package try_on_controller
 import (
 	"context"
 	"fashora-backend/config"
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+
 	"fashora-backend/models"
 	"fashora-backend/services/external"
 	"fashora-backend/utils"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"time"
 )
 
 func UploadImages(c *gin.Context) {
@@ -26,9 +28,18 @@ func UploadImages(c *gin.Context) {
 
 	// Image configurations
 	images := []models.Image{
-		{"people", config.AppConfig.GCS.FolderPeople},
-		{"clothes", config.AppConfig.GCS.FolderClothes},
-		{"mask", config.AppConfig.GCS.FolderMask},
+		{
+			FormKey:    "people",
+			BucketName: config.AppConfig.GCS.FolderPeople,
+		},
+		{
+			FormKey:    "clothes",
+			BucketName: config.AppConfig.GCS.FolderClothes,
+		},
+		{
+			FormKey:    "mask",
+			BucketName: config.AppConfig.GCS.FolderMask,
+		},
 	}
 
 	// Step 1: Read all files from the request

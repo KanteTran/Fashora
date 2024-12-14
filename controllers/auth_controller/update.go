@@ -2,13 +2,15 @@ package auth_controller
 
 import (
 	"errors"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	"fashora-backend/models"
 	"fashora-backend/services/auth_service"
 	"fashora-backend/services/user_service"
 	"fashora-backend/utils"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-	"net/http"
 )
 
 func Update(c *gin.Context) {

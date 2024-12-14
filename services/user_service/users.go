@@ -2,7 +2,9 @@ package user_service
 
 import (
 	"errors"
+
 	"fashora-backend/models"
+
 	"golang.org/x/crypto/bcrypt"
 )
 

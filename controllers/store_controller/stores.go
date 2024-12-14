@@ -5,6 +5,7 @@ import (
 	"fashora-backend/config"
 	"fashora-backend/models"
 	"fashora-backend/services/external"
+	"fashora-backend/utils"
 	"fmt"
 	"net/http"
 
@@ -17,6 +18,7 @@ func CreateStore(c *gin.Context) {
 	storeName := c.PostForm("store_name")
 	address := c.PostForm("address")
 	description := c.PostForm("description")
+	typeStore := c.PostForm("type")
 
 	file, err := c.FormFile("image")
 	if err != nil {
@@ -36,6 +38,7 @@ func CreateStore(c *gin.Context) {
 		Address:     address,
 		Description: description,
 		Status:      1,
+		Type:        typeStore,
 	}
 
 	if err := models.DB.Create(&store).Error; err != nil {
@@ -92,7 +95,7 @@ func AddItem(c *gin.Context) {
 
 	file, err := c.FormFile("image")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Could not get image"})
+		utils.SendErrorResponse(c, http.StatusBadRequest, "Could not get image")
 		return
 	}
 
@@ -100,9 +103,9 @@ func AddItem(c *gin.Context) {
 	err = models.DB.Where("id = ?", storeID).First(&store).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Store does not exist"})
+			utils.SendErrorResponse(c, http.StatusBadRequest, "Store does not exist")
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			utils.SendErrorResponse(c, http.StatusBadRequest, "Database error")
 		}
 	}
 
@@ -112,10 +115,13 @@ func AddItem(c *gin.Context) {
 		return
 	}
 
-	fileName := fmt.Sprintf("%s/%s/%s", config.AppConfig.GCS.BucketName, fmt.Sprintf("stores/%s/items", store.Id), file.Filename)
+	fileName := fmt.Sprintf(
+		"%s/%s/%s", config.AppConfig.GCS.BucketName,
+		fmt.Sprintf("stores/%s/items", store.Id),
+		file.Filename)
 	imageUrl, err := external.UploadImageToGCS(fileName, file)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Could not upload image: %s", err)})
+		utils.SendErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("Could not upload image: %s", err))
 		return
 	}
 
@@ -127,18 +133,11 @@ func AddItem(c *gin.Context) {
 	}
 
 	if err := models.DB.Create(&item).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not add item"})
+		utils.SendErrorResponse(c, http.StatusInternalServerError, "Could not add item to store")
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"message":   "Item added successfully",
-		"item_id":   item.ID,
-		"store_id":  item.StoreID,
-		"name":      item.Name,
-		"url":       item.URL,
-		"image_url": imageUrl,
-	})
+	utils.SendSuccessResponse(c, http.StatusCreated, "Item added successfully", item)
 	c.Redirect(http.StatusFound, "/stores/add-item?success=true")
 }
 
@@ -146,66 +145,36 @@ func ListStores(c *gin.Context) {
 	var stores []models.Stores
 
 	if err := models.DB.Find(&stores).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": "Failed to fetch stores",
-			"error":   err.Error(),
-		})
+		utils.SendErrorResponse(c, http.StatusInternalServerError, "Failed to fetch stores")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Stores fetched successfully",
-		"data":    stores,
-	})
+	utils.SendSuccessResponse(c, http.StatusOK, "Stores fetched successfully", stores)
 }
 
 func GetStoreItemsById(c *gin.Context) {
-	// Lấy `id` từ tham số URL
-	//storeID := c.Param("id")
 	storeID := c.Query("id")
 
-	fmt.Printf(storeID)
-	// Kiểm tra xem cửa hàng có tồn tại không
 	var store models.Stores
 	if err := models.DB.Where("Id = ?", storeID).First(&store).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			response := models.Response{
-				Success: false,
-				Status:  http.StatusNotFound,
-				Message: fmt.Sprintf("Store with ID %s not found", storeID),
-			}
-			c.JSON(http.StatusNotFound, response)
+			utils.SendErrorResponse(c, http.StatusNotFound, fmt.Sprintf("Store with ID %s not found", storeID))
 			return
 		}
-		response := models.Response{
-			Success: false,
-			Status:  http.StatusInternalServerError,
-			Message: "Failed to fetch store",
-			Data:    err.Error(),
-		}
-		c.JSON(http.StatusInternalServerError, response)
+
+		utils.SendErrorResponse(c, http.StatusNotFound, "Failed to fetch store")
 		return
+
 	}
 
 	var items []models.Item
 	if err := models.DB.Where("store_id = ?", storeID).Find(&items).Error; err != nil {
-		response := models.Response{
-			Success: false,
-			Status:  http.StatusInternalServerError,
-			Message: "Failed to fetch items for the store",
-			Data:    err.Error(),
-		}
-		c.JSON(http.StatusInternalServerError, response)
+		utils.SendErrorResponse(c, http.StatusInternalServerError, "Failed to fetch items for the store")
 		return
 	}
 
-	response := models.Response{
-		Success: true,
-		Status:  http.StatusOK,
-		Message: "Store and items fetched successfully",
-		Data: gin.H{
+	utils.SendSuccessResponse(c, http.StatusOK, "Store and items fetched successfully",
+		gin.H{
 			"store": gin.H{
 				"id":          store.Id,
 				"store_name":  store.StoreName,
@@ -216,56 +185,33 @@ func GetStoreItemsById(c *gin.Context) {
 				"status":      store.Status,
 			},
 			"items": items,
-		},
-	}
-	c.JSON(http.StatusOK, response)
+		})
 }
 
 func GetItemsById(c *gin.Context) {
 	itemID := c.Query("id")
+
 	if itemID == "" {
-		response := models.Response{
-			Success: false,
-			Status:  http.StatusBadRequest,
-			Message: "Item ID is missing in the request",
-		}
-		c.JSON(http.StatusBadRequest, response)
+		utils.SendErrorResponse(c, http.StatusBadRequest, "Item ID is missing in the request")
 		return
 	}
 
 	var item models.Item
 	if err := models.DB.Where("id = ?", itemID).First(&item).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			response := models.Response{
-				Success: false,
-				Status:  http.StatusNotFound,
-				Message: fmt.Sprintf("Item with ID %s not found", itemID),
-			}
-			c.JSON(http.StatusNotFound, response)
+			utils.SendErrorResponse(c, http.StatusNotFound, fmt.Sprintf("Item with ID %s not found", itemID))
 			return
 		}
 
-		response := models.Response{
-			Success: false,
-			Status:  http.StatusInternalServerError,
-			Message: "Failed to fetch item",
-			Data:    err.Error(),
-		}
-		c.JSON(http.StatusInternalServerError, response)
+		utils.SendErrorResponse(c, http.StatusInternalServerError, "Failed to fetch item")
 		return
 	}
 
-	response := models.Response{
-		Success: true,
-		Status:  http.StatusOK,
-		Message: "Item fetched successfully",
-		Data: gin.H{
-			"id":        item.ID,
-			"store_id":  item.StoreID,
-			"name":      item.Name,
-			"url":       item.URL,
-			"image_url": item.ImageURL,
-		},
-	}
-	c.JSON(http.StatusOK, response)
+	utils.SendSuccessResponse(c, http.StatusOK, "Item fetched successfully", gin.H{
+		"id":        item.ID,
+		"store_id":  item.StoreID,
+		"name":      item.Name,
+		"url":       item.URL,
+		"image_url": item.ImageURL,
+	})
 }

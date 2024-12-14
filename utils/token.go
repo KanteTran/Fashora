@@ -2,13 +2,15 @@ package utils
 
 import (
 	"errors"
+	"strconv"
+	"time"
+
+	"github.com/golang-jwt/jwt/v4"
+	"gorm.io/gorm"
+
 	"fashora-backend/config"
 	"fashora-backend/models"
 	"fashora-backend/services/user_service"
-	"github.com/golang-jwt/jwt/v4"
-	"gorm.io/gorm"
-	"strconv"
-	"time"
 )
 
 var jwtKey = []byte(config.AppConfig.JWT.Secret)

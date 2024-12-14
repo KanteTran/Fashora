@@ -1,10 +1,12 @@
 package external
 
 import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	"fashora-backend/models"
 	"fashora-backend/utils"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func HomePage(c *gin.Context) {
