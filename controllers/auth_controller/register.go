@@ -32,11 +32,9 @@ func Register(c *gin.Context) {
 		utils.SendErrorResponse(c, http.StatusBadRequest, "Phone number is invalid")
 		return
 	}
-
 	userWithToken, err := auth_service.Register(models.UserInfo(input))
 	if err != nil {
-		handleRegistrationError(c, err)
-		return
+		utils.SendErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
 
 	responseData := map[string]interface{}{
@@ -44,14 +42,4 @@ func Register(c *gin.Context) {
 		"user":  userWithToken.User,
 	}
 	utils.SendSuccessResponse(c, http.StatusCreated, "User created successfully", responseData)
-}
-
-// handleRegistrationError handles errors returned from the registration service
-func handleRegistrationError(c *gin.Context, err error) {
-	switch err.Error() {
-	case "phone number already registered":
-		utils.SendErrorResponse(c, http.StatusBadRequest, "Phone number already registered")
-	default:
-		utils.SendErrorResponse(c, http.StatusInternalServerError, "An unexpected error occurred")
-	}
 }
