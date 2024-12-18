@@ -49,7 +49,6 @@ func RefreshTokenGcp() string {
 		fmt.Printf("Failed to read credentials file: %v\n", err)
 		os.Exit(1)
 	}
-
 	config, err := google.JWTConfigFromJSON(data, "https://www.googleapis.com/auth/cloud-platform")
 	if err != nil {
 		fmt.Printf("Failed to parse credentials file: %v\n", err)
