@@ -144,7 +144,14 @@ func AddItem(c *gin.Context) {
 func ListStores(c *gin.Context) {
 	var stores []models.Stores
 
-	if err := models.DB.Find(&stores).Error; err != nil {
+	storeType := c.Query("type")
+
+	query := models.DB
+	if storeType != "" {
+		query = query.Where("type = ?", storeType)
+	}
+
+	if err := query.Find(&stores).Error; err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Failed to fetch stores")
 		return
 	}
