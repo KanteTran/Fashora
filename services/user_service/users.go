@@ -1,11 +1,14 @@
 package user_service
 
 import (
+	"context"
 	"errors"
-
-	"fashora-backend/models"
+	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/api/iterator"
+
+	"fashora-backend/models"
 )
 
 func GetUserByPhoneNumber(phoneNumber string) (*models.Users, error) {
@@ -86,4 +89,34 @@ func UpdateUserByPhoneNumber(userInfoUpdate models.UserInfo) error {
 	}
 
 	return nil
+}
+
+// getVerifiedPhoneNumbers retrieves the list of verified phone numbers from Firebase
+func GetVerifiedPhoneNumbers(ctx context.Context) ([]string, error) {
+	// Initialize Firebase Auth client
+	authClient, err := models.FirebaseApp.Auth(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize Firebase Auth client: %v", err)
+	}
+
+	// List all users
+	iter := authClient.Users(ctx, "")
+	var verifiedPhones []string
+
+	for {
+		user, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break // Exit the loop when there are no more users
+		}
+		if err != nil {
+			return nil, fmt.Errorf("error listing users: %v", err)
+		}
+
+		// Check if the user has a verified phone number
+		if user.PhoneNumber != "" {
+			verifiedPhones = append(verifiedPhones, user.PhoneNumber)
+		}
+	}
+
+	return verifiedPhones, nil
 }

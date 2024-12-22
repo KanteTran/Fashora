@@ -3,12 +3,12 @@ package auth_service
 import (
 	"errors"
 
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
+
 	"fashora-backend/models"
 	"fashora-backend/services/user_service"
 	"fashora-backend/utils"
-
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type UserWithToken struct {
