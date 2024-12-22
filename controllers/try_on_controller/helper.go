@@ -21,7 +21,7 @@ func readFilesFromRequest(c *gin.Context, images []models.Image) (map[string]*mu
 	for _, image := range images {
 		file, err := c.FormFile(image.FormKey)
 		if err != nil {
-			return nil, fmt.Errorf("No file uploaded for %s", image.FormKey)
+			return nil, fmt.Errorf("no file uploaded for %s", image.FormKey)
 		}
 		files[image.FormKey] = file
 	}

@@ -22,6 +22,7 @@ func SetupPublicRoutes(r *gin.Engine) {
 	r.POST("/stores/create-store", store_controller.CreateStore)
 	r.GET("/stores/add-item", store_controller.AddItemPage)
 	r.POST("/stores/add-item", store_controller.AddItem)
+	r.POST("/try_on/segment", try_on_controller.Segment)
 
 }
 
