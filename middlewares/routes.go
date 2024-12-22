@@ -22,8 +22,6 @@ func SetupPublicRoutes(r *gin.Engine) {
 	r.POST("/stores/create-store", store_controller.CreateStore)
 	r.GET("/stores/add-item", store_controller.AddItemPage)
 	r.POST("/stores/add-item", store_controller.AddItem)
-	r.POST("/try_on/segment", try_on_controller.Segment)
-
 }
 
 func SetupProtectedRoutes(r *gin.Engine) {
@@ -39,6 +37,7 @@ func SetupProtectedRoutes(r *gin.Engine) {
 		protected.GET("/stores/list-all-store", store_controller.ListStores)
 		protected.GET("/stores/get_all_items_store", store_controller.GetStoreItemsById)
 		protected.GET("/stores/get_only_items", store_controller.GetItemsById)
+		protected.POST("/try_on/segment", try_on_controller.Segment)
 
 		// Add more authenticated routes here if needed
 	}
