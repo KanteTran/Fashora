@@ -12,6 +12,7 @@ type Config struct {
 	GCS      GCSConfig
 	Server   ServerConfig
 	Model    ModelConfig
+	FireBase FireBaseConfig
 }
 
 var AppConfig Config
@@ -28,5 +29,6 @@ func LoadConfig() {
 		GCS:      loadGCSConfig(),
 		Server:   loadServerConfig(),
 		Model:    loadModelConfig(),
+		FireBase: loadFireBaseConfig(),
 	}
 }

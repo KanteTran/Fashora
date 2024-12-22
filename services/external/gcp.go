@@ -3,6 +3,7 @@ package external
 import (
 	"context"
 	"errors"
+	"fashora-backend/logger"
 	"fmt"
 	"io"
 	"log"
@@ -56,7 +57,7 @@ func CreateFoldersIfNotExists(bucketName string, folderPath string) error {
 			return fmt.Errorf("failed to close writer for folder '%s': %v", currentPath, err)
 		}
 
-		log.Printf("Folder '%s' created in bucket '%s'\n", currentPath, bucketName)
+		logger.Infof("Folder '%s' created in bucket '%s'\n", currentPath, bucketName)
 	}
 
 	return nil
@@ -98,6 +99,6 @@ func UploadImageToGCS(fileURL string, file *multipart.FileHeader) (string, error
 	}
 
 	publicURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucketName, objectPath)
-	log.Printf("File uploaded successfully: %s\n", publicURL)
+	logger.Infof("File uploaded successfully: %s\n", publicURL)
 	return publicURL, nil
 }

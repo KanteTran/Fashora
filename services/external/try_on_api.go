@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fashora-backend/logger"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -46,12 +47,12 @@ func RefreshTokenGcp() string {
 
 	data, err := os.ReadFile(credentialsFilePath)
 	if err != nil {
-		fmt.Printf("Failed to read credentials file: %v\n", err)
+		logger.Infof("Failed to read credentials file: %v\n", err)
 		os.Exit(1)
 	}
 	config, err := google.JWTConfigFromJSON(data, "https://www.googleapis.com/auth/cloud-platform")
 	if err != nil {
-		fmt.Printf("Failed to parse credentials file: %v\n", err)
+		logger.Infof("Failed to parse credentials file: %v\n", err)
 		os.Exit(1)
 	}
 

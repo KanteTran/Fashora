@@ -1,15 +1,16 @@
 package main
 
 import (
-	"fashora-backend/config"
-	"fashora-backend/middlewares"
-	"fashora-backend/models"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
+	"fashora-backend/config"
+	"fashora-backend/middlewares"
+	"fashora-backend/models"
 )
 
 func main() {

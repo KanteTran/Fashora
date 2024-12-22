@@ -2,14 +2,13 @@ package try_on_controller
 
 import (
 	"context"
-	"fashora-backend/config"
-	"fmt"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 
+	"fashora-backend/config"
+	"fashora-backend/logger"
 	"fashora-backend/models"
 	"fashora-backend/services/external"
 	"fashora-backend/utils"
@@ -17,7 +16,7 @@ import (
 
 func UploadImages(c *gin.Context) {
 	ctx := context.Background()
-	fmt.Printf("Start - Request: %s, Time: %v\n", c.Request.URL.Path, time.Now())
+	logger.Infof("Start - Request: %s, Time: %v\n", c.Request.URL.Path, time.Now())
 
 	// Create GCS client
 	client, err := CreateGCSClient(ctx, external.RefreshTokenGcp())
@@ -34,10 +33,6 @@ func UploadImages(c *gin.Context) {
 			BucketName: config.AppConfig.GCS.FolderPeople,
 		},
 		{
-			FormKey:    "clothes",
-			BucketName: config.AppConfig.GCS.FolderClothes,
-		},
-		{
 			FormKey:    "mask",
 			BucketName: config.AppConfig.GCS.FolderMask,
 		},
@@ -49,7 +44,6 @@ func UploadImages(c *gin.Context) {
 		utils.SendErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	log.Printf("Read file oke")
 
 	// Step 2: Upload files to GCS
 	imageURLs, err := uploadImagesToGCS(ctx, client, files, images)
@@ -57,7 +51,6 @@ func UploadImages(c *gin.Context) {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	log.Printf("Image upload oke")
 
 	// Step 3: Call external TryOn API
 	external.CallTryOnAPI(c, imageURLs["people"], imageURLs["clothes"], imageURLs["mask"])
