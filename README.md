@@ -3,77 +3,40 @@
 Fashionista Backend is a RESTful API server built using Go. It supports user authentication, store and inventory management, and integration with Google Cloud Storage (GCS).
 
 ---
-
-## TODO
-### API Enhancements
-- [ ] **Pagination**:
-    - Add pagination support for `ListStores` and `ListInventories` endpoints.
-- [ ] **Search and Filtering**:
-    - Implement search and filter capabilities for inventory items based on criteria like `name` or `store_id`.
-
-### Security
-- [ ] **Rate Limiting**:
-    - Protect API endpoints from abuse by adding rate-limiting middleware.
-- [ ] **Token Management**:
-    - Enhance JWT authentication by introducing refresh tokens.
-- [ ] **Secure HTTP Headers**:
-    - Configure secure HTTP headers to protect against common web vulnerabilities.
-
-### Testing
-- [ ] **Unit Tests**:
-    - Write unit tests for core services and controllers.
-- [ ] **Integration Tests**:
-    - Add integration tests for major API workflows.
-- [ ] **CI/CD**:
-    - Set up a CI/CD pipeline for automated testing and deployment.
-
-### Code Refactoring
-- [ ] **Constants Management**:
-    - Extract reusable constants into a dedicated `constants.go` file.
-- [ ] **Error Handling**:
-    - Standardize error handling and logging across the project.
-- [ ] **Code Cleanup**:
-    - Remove duplicate code and improve modularity in services and controllers.
-
-### Documentation
-- [ ] **API Documentation**:
-    - Add OpenAPI/Swagger documentation for all endpoints.
-- [ ] **Developer Guide**:
-    - Create a detailed guide for contributors to understand the codebase and set up their environment.
-
-### External Integrations
-- [ ] **TryOn API**:
-    - Extend the functionality to support multi-item try-on.
-- [ ] **Image Processing**:
-    - Add pre-upload image transformations like resizing and cropping.
-
-### Deployment
-- [ ] **Kubernetes Deployment**:
-    - Create Kubernetes manifests for production-ready deployment.
-- [ ] **Infrastructure as Code**:
-    - Use Terraform to provision infrastructure.
-
 ## Table of Contents
 
 - [Features](#features)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
-    - [1. Clone the Repository](#1-clone-the-repository)
-    - [2. API Endpoints](#5-api-endpoints)
+  - [1. Clone the Repository](#1-clone-the-repository)
+  - [2. Configure Environment Variables](#2-configure-environment-variables)
+  - [3. Run the Application with Docker](#3-run-the-application-with-docker)
+  - [4. Access the API](#4-access-the-api)
+- [Development Process](#development-process)
+  - [Commit Standards](#commit-standards)
+  - [Code Review](#code-review)
+  - [Continuous Integration and Deployment](#continuous-integration-and-deployment)
 - [Testing](#testing)
 - [License](#license)
+- [Notes](#notes)
 
----
 
 ## Features
 
-- **User Authentication**: Registration and login with JWT.
-- **Store Management**: Create and manage stores and their items.
-- **Image Upload**: Upload and manage images with Google Cloud Storage.
-- **Inventory Management**: Add, list, and delete inventory items.
-- **External API Integration**: Integration with external APIs like TryOn.
-
+1. **User Authentication**:
+   1. Support for user registration and login using JWT.
+   2. Use FireBase to verify via OTP
+2. **Store Management**:
+   1. Create and manage stores and their inventory.
+3. **Inventory Management**:
+   1. Add, list, and delete items from the inventory.
+4. **Try-one**:
+   1. Integration with Google Cloud Storage for image upload and management.
+   2. Seamless integration with other , such as the TryOn API.
+6. **CI/CD**:
+   1. GoLint
+   2. CD
 ---
 
 ## Project Structure
@@ -120,14 +83,13 @@ Fashionista/
 │   ├── create_store.html
 │   ├── home.html
 ├── utils/
-│   ├── gcs.go           # GCS helper functions
 │   ├── response.go      # Standardized API responses
 │   ├── token.go         # JWT utilities
 │   ├── valid.go         # Validation functions
 ├── .env                 # Environment variables
 ├── go.mod               # Go module file
 ├── LICENSE              # License information
-├── smart-exchange-441906-p0-c0277d140202.json
+├── file config Firebase and GCS
 └── README.md            # Project documentation
 ```
 ## Prerequisites
@@ -156,7 +118,35 @@ bash start_server.sh
 You can test the API endpoints using tools like **Postman** or **cURL**. Make sure the backend is running locally or deployed to an accessible server.
 
 ---
+## Development Process
 
+### Commit Standards
+- Use **Conventional Commits** to ensure clear and consistent commit messages:
+    - `feat`: Adding new features (e.g., `feat: add user authentication endpoint`).
+    - `fix`: Fixing bugs (e.g., `fix: resolve token expiration issue`).
+    - `docs`: Updating documentation (e.g., `docs: update README with API examples`).
+    - `refactor`: Refactoring code without adding features or fixing bugs (e.g., `refactor: optimize database queries`).
+    - `test`: Adding or updating tests (e.g., `test: add unit tests for user service`).
+- Avoid vague commit messages like "update code" or "fix bug."
+
+### Code Review
+
+
+### Continuous Integration and Deployment
+- **Pre-Merge Checks**:
+    - PRs must pass all CI checks, including linting, testing, and build validation.
+- **Development Environment Deployment**:
+    - Merging into the `dev` branch triggers automatic deployment to the development environment via GitHub Actions.
+- **Production Environment Deployment**:
+    - Changes merged into the `main` branch are automatically deployed to production after passing all tests.
+- Use **GitHub Actions** with workflows for:
+    - Running linting checks (e.g., `golangci-lint`).
+    - Running unit and integration tests.
+    - Building and deploying Docker containers.
+
+---
+
+This process ensures high-quality code, smooth collaboration, and reliable deployments.
 ## License
 
 This project is licensed under the [MIT License](LICENSE).

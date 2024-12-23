@@ -1,0 +1,77 @@
+#name: Tag and Deploy
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#
+#permissions:
+#  contents: write
+#  packages: write # Required for publishing to GitHub Container Registry
+#
+#env:
+#  IMAGE_NAME: fashionira
+#
+#jobs:
+#  tag-and-deploy:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      # Checkout the repository
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      # Build the Docker image
+#      - name: Build Docker Image
+#        run: |
+#          LOWERCASE_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
+#          IMAGE_TAG=v$(date +"%Y%m%d")
+#          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+#          echo "Building Docker image with tag $IMAGE_TAG"
+#          docker build -t ghcr.io/$LOWERCASE_OWNER/${{ env.IMAGE_NAME }}:$IMAGE_TAG -f docker/run/Dockerfile .
+#
+#      # Login to GitHub Container Registry
+#      - name: GitHub Container Registry Login
+#        run: |
+#          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+#
+#      # Push the Docker image
+#      - name: Push Docker Image
+#        run: |
+#          LOWERCASE_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
+#          echo "Pushing Docker image ghcr.io/$LOWERCASE_OWNER/${{ env.IMAGE_NAME }}:$IMAGE_TAG to GitHub Container Registry"
+#          docker push ghcr.io/$LOWERCASE_OWNER/${{ env.IMAGE_NAME }}:$IMAGE_TAG
+#
+#      # Deploy to Server
+#      - name: Deploy to Server
+#        uses: appleboy/ssh-action@v0.1.5
+#        with:
+#          host: ${{ secrets.SERVER_DEPLOY }}
+#          username: ${{ secrets.USER_DEPLOY }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          port: 22
+#          script: |
+#            echo "Connected successfully!"
+#            IMAGE_TAG=v$(date +"%Y%m%d")
+#            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+#            LOWERCASE_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
+#            echo "Pulling Docker image from GitHub Container Registry ghcr.io/$LOWERCASE_OWNER/${{ env.IMAGE_NAME }}:$IMAGE_TAG"
+#            docker pull ghcr.io/$LOWERCASE_OWNER/${{ env.IMAGE_NAME }}:$IMAGE_TAG
+#            echo "Running Docker container"
+#            docker stop fashionira-container || true
+#            docker rm fashionira-container || true
+#            # Prepare environment variables for the container
+#            echo "Generating environment variables for Docker container"
+#            ENV_VARS=""
+#            for secret_name in $(printenv | grep '^SECRET_' | cut -d= -f1); do
+#            ENV_VARS+="--env $secret_name=${!secret_name} "
+#            done
+#
+#            echo "Running new Docker container with secrets as environment variables"
+#            docker run -d \
+#            -p ${{ secrets.PORT_SERVER }}:${{ secrets.PORT_SERVER }} \
+#            $ENV_VARS \
+#            --name fashionira-container \
+#            ghcr.io/$LOWERCASE_OWNER/$IMAGE_NAME:$IMAGE_TAG
+#
+#            echo "Docker container is running on port ${{ secrets.PORT_SERVER }}"

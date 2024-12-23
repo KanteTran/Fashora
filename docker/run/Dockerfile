@@ -9,7 +9,7 @@ RUN go mod download
 
 COPY . .
 # Make the script executable
-RUN chmod +x start_server.sh
+#RUN chmod +x start_server.sh
 
 # Run the Bash script
-CMD ["./start_server.sh"]
+CMD ["go", "run", "app/main.go"]
