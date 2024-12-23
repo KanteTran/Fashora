@@ -2,12 +2,14 @@ package try_on_controller
 
 import (
 	"bytes"
-	"fashora-backend/config"
-	"fashora-backend/utils"
-	"github.com/gin-gonic/gin"
 	"io"
 	"mime/multipart"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"fashora-backend/config"
+	"fashora-backend/utils"
 )
 
 func Segment(c *gin.Context) {

@@ -146,7 +146,7 @@ Fashionista/
 git clone <repository-url>
 cd Fashionista
 File .env và smart-exchange connect to Kante
-go run app/main.go 
+bash start_server.sh
 
 ```
 ---
