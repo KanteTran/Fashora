@@ -51,7 +51,7 @@ jobs:
       - name: Notify
         run: |
           echo "Docker image successfully built and pushed: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:$TAG"
-          echo ${{ secrets.SSH_PRIVATE_KEY }}
+          echo "git ${{ secrets.SSH_PRIVATE_KEY }}"
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@v0.1.5
