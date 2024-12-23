@@ -5,38 +5,49 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  packages: write # Required for publishing to GitHub Container Registry
+
+env:
+  IMAGE_NAME: fashionira
+
 jobs:
   tag-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
+      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
-
-      # Step 2: Generate a tag (e.g., timestamp-based tag)
-      - name: Create a Tag
-        id: tag
+      - name: Extract Repository Owner (Lowercase)
+        id: extract-owner
         run: |
-          TAG="v$(date +'%Y%m%d%H%M%S')"  # Example: Timestamp-based tag
-          echo "Generated tag: $TAG"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "LOWERCASE_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      # Step 3: Push the tag to GitHub
-      - name: Push Tag
+
+      # Build the Docker image
+      - name: Build Docker Image
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.sha }}
         run: |
-          git tag ${{ steps.tag.outputs.tag }}
-          git push origin ${{ steps.tag.outputs.tag }}
+          echo "Building Docker image with tag $TAG"
+          docker build -t ghcr.io/$LOWERCASE_OWNER/${{ env.IMAGE_NAME }}:$TAG -f docker/run/Dockerfile .
 
-      # Step 4: Deploy the Application
-      - name: Deploy Application
-        env:
-          TAG: ${{ steps.tag.outputs.tag }}
+      # Login to GitHub Container Registry
+      - name: GitHub Container Registry Login
         run: |
-          echo "Deploying application with tag: $TAG"
-          # Example: Build and push Docker image
-          docker build -t your-dockerhub-user/your-image:$TAG .
-          docker push your-dockerhub-user/your-image:$TAG
-          echo "Deployed successfully!"
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+
+      # Push the Docker image
+      - name: Push Docker Image
+        env:
+          TAG: ${{ github.sha }}
+        run: |
+          echo "Pushing Docker image to GitHub Container Registry"
+          docker push ghcr.io/$LOWERCASE_OWNER/${{ env.IMAGE_NAME }}:$TAG
+
+      # Notify Success
+      - name: Notify
+        run: |
+          echo "Docker image successfully built and pushed: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:$TAG"

@@ -1,16 +1,15 @@
-FROM golang:1.32.3-alpine as builder
+# Build Stage
+FROM golang:1.23.4-alpine3.21 AS builder
+
 WORKDIR /app
 
+# Copy Go module files and download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
+
 COPY . .
+# Make the script executable
+RUN chmod +x start_server.sh
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd/main.go
-
-FROM alpine:latest
-
-WORKDIR /app
-
-COPY --from=builder /app/main .
-
-ENTRYPOINT ["./main", "jsin-telegram"]
+# Run the Bash script
+CMD ["./start_server.sh"]
