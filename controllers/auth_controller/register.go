@@ -34,6 +34,7 @@ func Register(c *gin.Context) {
 	}
 	if !utils.ValidatePhoneOTP(c, input.PhoneNumber) {
 		utils.SendErrorResponse(c, http.StatusBadRequest, "Phone number is not valid by OTP")
+		return
 	}
 	userWithToken, err := auth_service.Register(models.UserInfo(input))
 	if err != nil {
