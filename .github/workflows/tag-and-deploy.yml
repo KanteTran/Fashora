@@ -1,0 +1,42 @@
+name: Tag and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Generate a tag (e.g., timestamp-based tag)
+      - name: Create a Tag
+        id: tag
+        run: |
+          TAG="v$(date +'%Y%m%d%H%M%S')"  # Example: Timestamp-based tag
+          echo "Generated tag: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      # Step 3: Push the tag to GitHub
+      - name: Push Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag ${{ steps.tag.outputs.tag }}
+          git push origin ${{ steps.tag.outputs.tag }}
+
+      # Step 4: Deploy the Application
+      - name: Deploy Application
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          echo "Deploying application with tag: $TAG"
+          # Example: Build and push Docker image
+          docker build -t your-dockerhub-user/your-image:$TAG .
+          docker push your-dockerhub-user/your-image:$TAG
+          echo "Deployed successfully!"
