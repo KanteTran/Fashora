@@ -1,16 +1,17 @@
 package main
 
 import (
+	"fashora-backend/database"
+	"fashora-backend/logger"
+	"fashora-backend/middlewares"
+	"fashora-backend/models"
 	"fmt"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"log"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-
 	"fashora-backend/config"
-	"fashora-backend/middlewares"
-	"fashora-backend/models"
 )
 
 func main() {
@@ -18,6 +19,11 @@ func main() {
 	r.LoadHTMLGlob("templates/*")
 	config.LoadConfig()
 	models.ConnectDatabase()
+	// 3. Init db
+	err := database.GetDBInstance().Open(config.AppConfig.Postgres)
+	if err != nil {
+		logger.Fatalf("===== Open db failed: %+v", err.Error())
+	}
 
 	// CORS Middleware
 	r.Use(cors.New(cors.Config{

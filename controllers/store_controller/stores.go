@@ -2,15 +2,17 @@ package store_controller
 
 import (
 	"errors"
-	"fashora-backend/config"
-	"fashora-backend/models"
-	"fashora-backend/services/external"
-	"fashora-backend/utils"
+	"fashora-backend/database"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	"fashora-backend/config"
+	"fashora-backend/models"
+	"fashora-backend/services/external"
+	"fashora-backend/utils"
 )
 
 func CreateStore(c *gin.Context) {
@@ -26,7 +28,7 @@ func CreateStore(c *gin.Context) {
 		return
 	}
 
-	tx := models.DB.Begin()
+	tx := database.GetDBInstance().DB().Begin()
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to start transaction"})
 		return
@@ -41,7 +43,7 @@ func CreateStore(c *gin.Context) {
 		Type:        typeStore,
 	}
 
-	if err := models.DB.Create(&store).Error; err != nil {
+	if err := database.GetDBInstance().DB().Create(&store).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create store"})
 		return
 	}
@@ -78,7 +80,7 @@ func CreateStore(c *gin.Context) {
 
 func AddItemPage(c *gin.Context) {
 	var stores []models.Stores
-	if err := models.DB.Find(&stores).Error; err != nil {
+	if err := database.GetDBInstance().DB().Find(&stores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch stores"})
 		return
 	}
@@ -100,7 +102,7 @@ func AddItem(c *gin.Context) {
 	}
 
 	var store models.Stores
-	err = models.DB.Where("id = ?", storeID).First(&store).Error
+	err = database.GetDBInstance().DB().Where("id = ?", storeID).First(&store).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			utils.SendErrorResponse(c, http.StatusBadRequest, "Store does not exist")
@@ -132,7 +134,7 @@ func AddItem(c *gin.Context) {
 		ImageURL: imageUrl,
 	}
 
-	if err := models.DB.Create(&item).Error; err != nil {
+	if err := database.GetDBInstance().DB().Create(&item).Error; err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Could not add item to store")
 		return
 	}
@@ -146,7 +148,7 @@ func ListStores(c *gin.Context) {
 
 	storeType := c.Query("type")
 
-	query := models.DB
+	query := database.GetDBInstance().DB()
 	if storeType != "" {
 		query = query.Where("type = ?", storeType)
 	}
@@ -163,7 +165,7 @@ func GetStoreItemsById(c *gin.Context) {
 	storeID := c.Query("id")
 
 	var store models.Stores
-	if err := models.DB.Where("Id = ?", storeID).First(&store).Error; err != nil {
+	if err := database.GetDBInstance().DB().Where("Id = ?", storeID).First(&store).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			utils.SendErrorResponse(c, http.StatusNotFound, fmt.Sprintf("Store with ID %s not found", storeID))
 			return
@@ -175,7 +177,7 @@ func GetStoreItemsById(c *gin.Context) {
 	}
 
 	var items []models.Item
-	if err := models.DB.Where("store_id = ?", storeID).Find(&items).Error; err != nil {
+	if err := database.GetDBInstance().DB().Where("store_id = ?", storeID).Find(&items).Error; err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Failed to fetch items for the store")
 		return
 	}
@@ -204,7 +206,7 @@ func GetItemsById(c *gin.Context) {
 	}
 
 	var item models.Item
-	if err := models.DB.Where("id = ?", itemID).First(&item).Error; err != nil {
+	if err := database.GetDBInstance().DB().Where("id = ?", itemID).First(&item).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			utils.SendErrorResponse(c, http.StatusNotFound, fmt.Sprintf("Item with ID %s not found", itemID))
 			return

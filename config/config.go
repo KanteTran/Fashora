@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	Postgres DBConfig
+	Postgres DbPostGreSQLConfig
 	JWT      JWTConfig
 	GCS      GCSConfig
 	Server   ServerConfig

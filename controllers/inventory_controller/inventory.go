@@ -2,6 +2,7 @@ package inventory_controller
 
 import (
 	"errors"
+	"fashora-backend/database"
 	"fmt"
 	"net/http"
 
@@ -28,7 +29,7 @@ func AddInventory(c *gin.Context) {
 	}
 
 	var item models.Item
-	if err := models.DB.Where("id = ?", itemID).First(&item).Error; err != nil {
+	if err := database.GetDBInstance().DB().Where("id = ?", itemID).First(&item).Error; err != nil {
 		utils.SendErrorResponse(c, http.StatusNotFound, "Item not found")
 		return
 	}
@@ -42,7 +43,7 @@ func AddInventory(c *gin.Context) {
 		UserID:   userID,
 	}
 
-	if err := models.DB.Create(&inventory).Error; err != nil {
+	if err := database.GetDBInstance().DB().Create(&inventory).Error; err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Failed to add inventory")
 		return
 	}
@@ -62,7 +63,7 @@ func DeleteInventory(c *gin.Context) {
 		return
 	}
 
-	if err := models.DB.Where("id = ? AND user_id = ?", id, user.Id).Delete(&models.Inventory{}).Error; err != nil {
+	if err := database.GetDBInstance().DB().Where("id = ? AND user_id = ?", id, user.Id).Delete(&models.Inventory{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			utils.SendErrorResponse(c, http.StatusNotFound, fmt.Sprintf("Inventory with ID %s not found", id))
 			return
@@ -84,7 +85,7 @@ func ListInventories(c *gin.Context) {
 
 	var inventories []models.Inventory
 
-	if err := models.DB.Where("user_id = ?", user.Id).Find(&inventories).Error; err != nil {
+	if err := database.GetDBInstance().DB().Where("user_id = ?", user.Id).Find(&inventories).Error; err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Failed to get inventory")
 		return
 	}

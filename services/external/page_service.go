@@ -1,6 +1,7 @@
 package external
 
 import (
+	"fashora-backend/database"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,7 @@ import (
 func HomePage(c *gin.Context) {
 	var stores []models.Stores
 
-	if err := models.DB.Find(&stores).Error; err != nil {
+	if err := database.GetDBInstance().DB().Find(&stores).Error; err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Could not fetch stores")
 		return
 	}
