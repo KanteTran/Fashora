@@ -13,6 +13,7 @@ type Config struct {
 	Server   ServerConfig
 	Model    ModelConfig
 	FireBase FireBaseConfig
+	Version  VersionConfig
 }
 
 var AppConfig Config
@@ -30,5 +31,6 @@ func LoadConfig() {
 		Server:   loadServerConfig(),
 		Model:    loadModelConfig(),
 		FireBase: loadFireBaseConfig(),
+		Version:  loadVersionConfig(),
 	}
 }
