@@ -7,12 +7,13 @@ import (
 )
 
 type Config struct {
-	Postgres DBConfig
+	Postgres DbPostGreSQLConfig
 	JWT      JWTConfig
 	GCS      GCSConfig
 	Server   ServerConfig
 	Model    ModelConfig
 	FireBase FireBaseConfig
+	Version  VersionConfig
 }
 
 var AppConfig Config
@@ -30,5 +31,6 @@ func LoadConfig() {
 		Server:   loadServerConfig(),
 		Model:    loadModelConfig(),
 		FireBase: loadFireBaseConfig(),
+		Version:  loadVersionConfig(),
 	}
 }

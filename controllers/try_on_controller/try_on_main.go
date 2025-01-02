@@ -48,7 +48,6 @@ func UploadImages(c *gin.Context) {
 		utils.SendErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	logger.Info("Load oke")
 
 	// Step 2: Upload files to GCS
 	imageURLs, err := uploadImagesToGCS(ctx, client, files, images)
@@ -56,7 +55,6 @@ func UploadImages(c *gin.Context) {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	logger.Info("Upload oke")
 
 	// Step 3: Call external TryOn API
 	external.CallTryOnAPI(c, imageURLs["people"], imageURLs["clothes"], imageURLs["mask"])

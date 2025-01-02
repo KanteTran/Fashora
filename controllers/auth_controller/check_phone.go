@@ -2,6 +2,7 @@ package auth_controller
 
 import (
 	"errors"
+	"fashora-backend/database"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +23,7 @@ func CheckPhoneNumberExists(c *gin.Context) {
 	}
 
 	var user models.Users
-	err := models.DB.Where("phone = ?", input.PhoneNumber).First(&user).Error
+	err := database.GetDBInstance().DB().Where("phone = ?", input.PhoneNumber).First(&user).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

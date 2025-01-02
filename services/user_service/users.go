@@ -3,6 +3,7 @@ package user_service
 import (
 	"context"
 	"errors"
+	"fashora-backend/database"
 	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
@@ -13,7 +14,7 @@ import (
 
 func GetUserByPhoneNumber(phoneNumber string) (*models.Users, error) {
 	var user models.Users
-	result := models.DB.Where("phone = ?", phoneNumber).First(&user)
+	result := database.GetDBInstance().DB().Where("phone = ?", phoneNumber).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -23,7 +24,7 @@ func GetUserByPhoneNumber(phoneNumber string) (*models.Users, error) {
 
 func CreateNewUser(userInfo models.UserInfo) (*models.Users, error) {
 	var existingUser models.Users
-	if err := models.DB.Where("phone = ?", userInfo.PhoneNumber).First(&existingUser).Error; err == nil {
+	if err := database.GetDBInstance().DB().Where("phone = ?", userInfo.PhoneNumber).First(&existingUser).Error; err == nil {
 		return nil, errors.New("user already exists")
 	}
 
@@ -41,7 +42,7 @@ func CreateNewUser(userInfo models.UserInfo) (*models.Users, error) {
 		DeviceID:     userInfo.DeviceID,
 		Gender:       userInfo.Gender,
 	}
-	if err := models.DB.Create(&user).Error; err != nil {
+	if err := database.GetDBInstance().DB().Create(&user).Error; err != nil {
 		return nil, nil
 	}
 
@@ -79,7 +80,7 @@ func UpdateUserByPhoneNumber(userInfoUpdate models.UserInfo) error {
 		return errors.New("no fields to update")
 	}
 
-	result := models.DB.Model(models.Users{}).Where("phone = ?", userInfoUpdate.PhoneNumber).Updates(updateFields)
+	result := database.GetDBInstance().DB().Model(models.Users{}).Where("phone = ?", userInfoUpdate.PhoneNumber).Updates(updateFields)
 	if result.Error != nil {
 		return result.Error
 	}
