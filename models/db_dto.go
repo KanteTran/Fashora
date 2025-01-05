@@ -78,11 +78,12 @@ func (u *Stores) BeforeCreate(*gorm.DB) (err error) {
 }
 
 type Item struct {
-	ID       int    `json:"id" gorm:"primaryKey;autoIncrement"`
-	StoreID  string `json:"store_id" gorm:"not null"`
-	Name     string `json:"name" gorm:"not null"`
-	URL      string `json:"url"`
-	ImageURL string `json:"image" `
+	ID          int    `json:"id" gorm:"primaryKey;autoIncrement"`
+	StoreID     string `json:"store_id" gorm:"not null"`
+	Name        string `json:"name" gorm:"not null"`
+	URL         string `json:"url"`
+	ImageURL    string `json:"image" `
+	Description string `json:"description"`
 }
 
 type ImageRequest struct {

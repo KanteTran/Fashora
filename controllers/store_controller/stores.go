@@ -94,6 +94,7 @@ func AddItem(c *gin.Context) {
 	storeID := c.PostForm("store_id")
 	name := c.PostForm("name")
 	url := c.PostForm("url")
+	description := c.PostForm("description")
 
 	file, err := c.FormFile("image")
 	if err != nil {
@@ -128,10 +129,11 @@ func AddItem(c *gin.Context) {
 	}
 
 	item := models.Item{
-		StoreID:  storeID,
-		Name:     name,
-		URL:      url,
-		ImageURL: imageUrl,
+		StoreID:     storeID,
+		Name:        name,
+		URL:         url,
+		ImageURL:    imageUrl,
+		Description: description,
 	}
 
 	if err := database.GetDBInstance().DB().Create(&item).Error; err != nil {
@@ -217,10 +219,11 @@ func GetItemsById(c *gin.Context) {
 	}
 
 	utils.SendSuccessResponse(c, http.StatusOK, "Item fetched successfully", gin.H{
-		"id":        item.ID,
-		"store_id":  item.StoreID,
-		"name":      item.Name,
-		"url":       item.URL,
-		"image_url": item.ImageURL,
+		"id":          item.ID,
+		"store_id":    item.StoreID,
+		"name":        item.Name,
+		"url":         item.URL,
+		"image_url":   item.ImageURL,
+		"description": item.Description,
 	})
 }
