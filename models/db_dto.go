@@ -8,17 +8,16 @@ import (
 )
 
 type Users struct {
-	Id           string         `gorm:"primaryKey;size:255"`
-	Phone        string         `gorm:"size:255;unique"`
-	PasswordHash string         `gorm:"size:255"`
-	UserName     *string        `gorm:"size:100"`
-	Birthday     *time.Time     `gorm:"type:date"`
-	Address      *string        `gorm:"size:255"`
-	DeviceID     *string        `gorm:"size:100"`
-	Gender       *int           `gorm:"check:gender IN (0, 1, 2)"` // Gender: 0 (male), 1 (female), 2 (other), optional
-	CreatedAt    time.Time      `gorm:"autoCreateTime"`
-	UpdatedAt    time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	Id           string     `gorm:"primaryKey;size:255"`
+	Phone        string     `gorm:"size:255;unique"`
+	PasswordHash string     `gorm:"size:255"`
+	UserName     *string    `gorm:"size:100"`
+	Birthday     *time.Time `gorm:"type:date"`
+	Address      *string    `gorm:"size:255"`
+	DeviceID     *string    `gorm:"size:100"`
+	Gender       *int       `gorm:"check:gender IN (0, 1, 2)"` // Gender: 0 (male), 1 (female), 2 (other), optional
+	CreatedAt    time.Time  `gorm:"autoCreateTime"`
+	UpdatedAt    time.Time  `gorm:"autoUpdateTime"`
 }
 
 type Inventory struct {

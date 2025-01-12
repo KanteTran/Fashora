@@ -25,6 +25,7 @@ func Register(userInfo models.UserInfo) (*UserWithToken, error) {
 
 		return nil, err
 	}
+	//return nil
 
 	tokenString, err := utils.GenerateJWT(userInfo.PhoneNumber)
 	if err != nil {

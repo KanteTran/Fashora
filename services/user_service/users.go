@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fashora-backend/database"
+	"fashora-backend/logger"
 	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
@@ -27,12 +28,12 @@ func CreateNewUser(userInfo models.UserInfo) (*models.Users, error) {
 	if err := database.GetDBInstance().DB().Where("phone = ?", userInfo.PhoneNumber).First(&existingUser).Error; err == nil {
 		return nil, errors.New("user already exists")
 	}
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInfo.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, errors.New("failed to hash password")
 	}
 
+	logger.Info(fmt.Sprintf("chuan bi tao %s,%s,%s", userInfo.PhoneNumber, userInfo.PhoneNumber, userInfo.UserName))
 	user := models.Users{
 		Phone:        userInfo.PhoneNumber,
 		PasswordHash: string(hashedPassword),
@@ -42,7 +43,15 @@ func CreateNewUser(userInfo models.UserInfo) (*models.Users, error) {
 		DeviceID:     userInfo.DeviceID,
 		Gender:       userInfo.Gender,
 	}
+	logger.Infof(userInfo.PhoneNumber)
+	db := database.GetDBInstance().DB()
+	if db == nil {
+		logger.Error("Database instance is nil")
+		return nil, errors.New("database instance is nil")
+	}
+
 	if err := database.GetDBInstance().DB().Create(&user).Error; err != nil {
+		logger.Error(fmt.Sprintf("Failed to create user: %v", err))
 		return nil, nil
 	}
 
