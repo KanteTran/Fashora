@@ -4,14 +4,16 @@ import (
 	"context"
 	"fashora-backend/config"
 	"fashora-backend/logger"
+	//"fashora-backend/services/external"
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/option"
 )
 
 var FirebaseApp *firebase.App
 
-func ConnectDatabase() {
+//var GeminiApp *external.GeminiApp
 
+func ConnectDatabase() {
 	// Firebase initialization
 	opt := option.WithCredentialsFile(config.AppConfig.FireBase.FileKey)
 	app, err := firebase.NewApp(context.Background(), nil, opt)
@@ -21,5 +23,7 @@ func ConnectDatabase() {
 	}
 
 	FirebaseApp = app
+
+	//GeminiApp = external.InitGemini(config.AppConfig.Model.GeminiAPI)
 	logger.Infof("Successfully connected to Firebase")
 }

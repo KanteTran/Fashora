@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fashora-backend/controllers/scoring_controller"
 	"github.com/gin-gonic/gin"
 
 	"fashora-backend/controllers/auth_controller"
@@ -22,6 +23,9 @@ func SetupPublicRoutes(r *gin.Engine) {
 	r.POST("/stores/create-store", store_controller.CreateStore)
 	r.GET("/stores/add-item", store_controller.AddItemPage)
 	r.POST("/stores/add-item", store_controller.AddItem)
+
+	// Score APIs
+	r.POST("/image/scoring", scoring_controller.ScoreImage)
 
 	// Get version
 	r.GET("/version", external.Version)
