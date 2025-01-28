@@ -2,10 +2,11 @@ package external
 
 import (
 	"context"
-	"fashora-backend/config"
 	"fmt"
 
+	"fashora-backend/config"
 	"fashora-backend/logger"
+
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
 )

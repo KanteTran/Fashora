@@ -5,15 +5,8 @@
 *.dylib
 *.test
 *.out
-go.work
-go.work.sum
 .env
 .idea
 *.json
-smart-exchange-441906-p0-c0277d140202.json
 __pycache__
-app/app.log
-app/app.pid
-app.log
-appp.pid
-fashora-75822-firebase-adminsdk-vur9n-ac8050a58c.json
+app/*

@@ -1,4 +1,4 @@
-package auth_controller
+package auth
 
 import (
 	"net/http"

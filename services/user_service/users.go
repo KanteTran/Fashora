@@ -25,7 +25,8 @@ func GetUserByPhoneNumber(phoneNumber string) (*models.Users, error) {
 
 func CreateNewUser(userInfo models.UserInfo) (*models.Users, error) {
 	var existingUser models.Users
-	if err := database.GetDBInstance().DB().Where("phone = ?", userInfo.PhoneNumber).First(&existingUser).Error; err == nil {
+	if err := database.GetDBInstance().DB().Where(
+		"phone = ?", userInfo.PhoneNumber).First(&existingUser).Error; err == nil {
 		return nil, errors.New("user already exists")
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInfo.Password), bcrypt.DefaultCost)
@@ -33,7 +34,6 @@ func CreateNewUser(userInfo models.UserInfo) (*models.Users, error) {
 		return nil, errors.New("failed to hash password")
 	}
 
-	logger.Info(fmt.Sprintf("chuan bi tao %s,%s,%s", userInfo.PhoneNumber, userInfo.PhoneNumber, userInfo.UserName))
 	user := models.Users{
 		Phone:        userInfo.PhoneNumber,
 		PasswordHash: string(hashedPassword),
@@ -89,7 +89,8 @@ func UpdateUserByPhoneNumber(userInfoUpdate models.UserInfo) error {
 		return errors.New("no fields to update")
 	}
 
-	result := database.GetDBInstance().DB().Model(models.Users{}).Where("phone = ?", userInfoUpdate.PhoneNumber).Updates(updateFields)
+	result := database.GetDBInstance().DB().Model(models.Users{}).Where(
+		"phone = ?", userInfoUpdate.PhoneNumber).Updates(updateFields)
 	if result.Error != nil {
 		return result.Error
 	}

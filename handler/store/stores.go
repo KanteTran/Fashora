@@ -1,4 +1,4 @@
-package store_controller
+package store
 
 import (
 	"errors"

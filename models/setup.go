@@ -2,16 +2,17 @@ package models
 
 import (
 	"context"
+
 	"fashora-backend/config"
 	"fashora-backend/logger"
-	//"fashora-backend/services/external"
+	"fashora-backend/services/prompt"
+
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/option"
 )
 
 var FirebaseApp *firebase.App
-
-//var GeminiApp *external.GeminiApp
+var PromptLoader *prompt.PromptLoader
 
 func ConnectDatabase() {
 	// Firebase initialization
@@ -23,7 +24,9 @@ func ConnectDatabase() {
 	}
 
 	FirebaseApp = app
-
-	//GeminiApp = external.InitGemini(config.AppConfig.Model.GeminiAPI)
 	logger.Infof("Successfully connected to Firebase")
+
+	PromptLoader, _ = prompt.NewPromptLoader(config.AppConfig.Prompt.PromptFileName)
+	logger.Infof("Successfully initialized prompt loader")
+
 }

@@ -1,8 +1,9 @@
 package config
 
 import (
+	"fashora-backend/logger"
+
 	"github.com/joho/godotenv"
-	"log"
 )
 
 type Config struct {
@@ -13,6 +14,7 @@ type Config struct {
 	Model    ModelConfig
 	FireBase FireBaseConfig
 	Version  VersionConfig
+	Prompt   PromptConfig
 }
 
 var AppConfig Config
@@ -20,7 +22,7 @@ var AppConfig Config
 func LoadConfig() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("No .env file found, reading from environment variables")
+		logger.Info("No .env file found, reading from environment variables")
 	}
 
 	AppConfig = Config{
@@ -31,5 +33,6 @@ func LoadConfig() {
 		Model:    loadModelConfig(),
 		FireBase: loadFireBaseConfig(),
 		Version:  loadVersionConfig(),
+		Prompt:   loadPromptConfig(),
 	}
 }
