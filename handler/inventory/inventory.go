@@ -1,4 +1,4 @@
-package inventory_controller
+package inventory
 
 import (
 	"errors"
@@ -63,7 +63,8 @@ func DeleteInventory(c *gin.Context) {
 		return
 	}
 
-	if err := database.GetDBInstance().DB().Where("id = ? AND user_id = ?", id, user.Id).Delete(&models.Inventory{}).Error; err != nil {
+	if err := database.GetDBInstance().DB().Where(
+		"id = ? AND user_id = ?", id, user.Id).Delete(&models.Inventory{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			utils.SendErrorResponse(c, http.StatusNotFound, fmt.Sprintf("Inventory with ID %s not found", id))
 			return

@@ -10,6 +10,7 @@ require (
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v4 v4.5.1
+	github.com/google/generative-ai-go v0.19.0
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mvrilo/go-redoc v0.1.5
@@ -25,6 +26,7 @@ require (
 require (
 	cel.dev/expr v0.16.1 // indirect
 	cloud.google.com/go v0.116.0 // indirect
+	cloud.google.com/go/ai v0.8.0 // indirect
 	cloud.google.com/go/auth v0.10.2 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.5 // indirect
 	cloud.google.com/go/compute/metadata v0.5.2 // indirect

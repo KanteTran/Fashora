@@ -1,17 +1,18 @@
 package main
 
 import (
+	"fashora-backend/config"
 	"fashora-backend/database"
 	"fashora-backend/logger"
 	"fashora-backend/middlewares"
 	"fashora-backend/models"
+
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"log"
 	"time"
 
-	"fashora-backend/config"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -24,7 +25,6 @@ func main() {
 	if err != nil {
 		logger.Fatalf("===== Open db failed: %+v", err.Error())
 	}
-
 	// CORS Middleware
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},                                       // Allow all origins

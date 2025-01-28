@@ -1,4 +1,4 @@
-package try_on_controller
+package try_on
 
 import (
 	"context"

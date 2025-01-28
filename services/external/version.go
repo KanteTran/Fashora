@@ -1,10 +1,12 @@
 package external
 
 import (
+	"net/http"
+
 	"fashora-backend/config"
 	"fashora-backend/utils"
+
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func Version(c *gin.Context) {
