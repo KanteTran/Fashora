@@ -28,14 +28,14 @@ import (
 type ScoreResponse struct {
 	StyleDescription       string `json:"style_description"`
 	BodyShapeSkinTone      string `json:"body_shape_skin_tone"`
-	ColorHarmonyScore      int    `json:"color_harmony_score"`
-	QualityScore           int    `json:"quality_score"`
-	BalanceScore           int    `json:"balance_score"`
-	StyleMatchScore        int    `json:"style_match_score"`
-	BodyShapeFitScore      int    `json:"body_shape_fit_score"`
-	PracticalityScore      int    `json:"practicality_score"`
-	ComfortScore           int    `json:"comfort_score"`
-	SkinHairToneMatchScore int    `json:"skin_hair_tone_match_score"`
+	ColorHarmonyScore      string `json:"color_harmony_score"`
+	QualityScore           string `json:"quality_score"`
+	BalanceScore           string `json:"balance_score"`
+	StyleMatchScore        string `json:"style_match_score"`
+	BodyShapeFitScore      string `json:"body_shape_fit_score"`
+	PracticalityScore      string `json:"practicality_score"`
+	ComfortScore           string `json:"comfort_score"`
+	SkinHairToneMatchScore string `json:"skin_hair_tone_match_score"`
 	Conclusion             string `json:"conclusion"`
 	SuggestedImprovements  string `json:"suggested_improvements"`
 }
