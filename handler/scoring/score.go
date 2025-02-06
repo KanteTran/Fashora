@@ -2,6 +2,7 @@ package scoring
 
 import (
 	"bytes"
+	"encoding/json"
 	"fashora-backend/config"
 	"fashora-backend/logger"
 	"fashora-backend/models"
@@ -11,6 +12,7 @@ import (
 	"fmt"
 	"golang.org/x/image/webp"
 	"image/png"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
@@ -20,9 +22,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "golang.org/x/image/webp"
 
-	"encoding/json"
 	"io"
-	"log"
 )
 
 type ScoreResponse struct {
@@ -148,12 +148,14 @@ func ScoreImage(c *gin.Context) {
 	outfitEvalPrompt, _ := models.PromptLoader.GetPrompt(config.AppConfig.Prompt.OutfitEvalPrompt)
 	rawJSON, _ := GeminiApp.GeminiFashionScore(imgFormat, imgData, prompt.ConvertPromptToString(outfitEvalPrompt))
 
+	logger.Info(rawJSON)
 	// filter "```json\n" và "```\n" in response from model
 	cleanedJSON := strings.TrimPrefix(rawJSON, "```json\n")
 	cleanedJSON = strings.TrimSuffix(cleanedJSON, "```\n")
 
 	// Parse JSON to object
 	var evaluation ScoreResponse
+	logger.Info(cleanedJSON)
 	err = json.Unmarshal([]byte(cleanedJSON), &evaluation)
 	if err != nil {
 		log.Fatalf("Error when parse JSON: %v", err)
