@@ -28,7 +28,7 @@ func InitGemini(key string) *GeminiApp {
 }
 
 // GeminiFashionScore Send an image to Gemini and get fashion scoring
-func (app *GeminiApp) GeminiFashionScore(imgData []byte, prompt string) (string, error) {
+func (app *GeminiApp) GeminiFashionScore(imgFormat string, imgData []byte, prompt string) (string, error) {
 	// Set up the generative model with a custom temperature
 	model := app.client.GenerativeModel(config.AppConfig.Model.GeminiModelName)
 	temp := float32(0.8)
@@ -36,7 +36,7 @@ func (app *GeminiApp) GeminiFashionScore(imgData []byte, prompt string) (string,
 
 	// Create the input data for the model (image and prompt)
 	data := []genai.Part{
-		genai.ImageData("jpeg", imgData), // Assuming the image is in JPEG format
+		genai.ImageData(imgFormat, imgData), // Assuming the image is in JPEG format
 		genai.Text(prompt),
 	}
 

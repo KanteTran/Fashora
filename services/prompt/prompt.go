@@ -76,7 +76,6 @@ func (pl *PromptLoader) GetPrompt(name string) (Prompt, error) {
 	return prompt, nil
 }
 
-// Hàm chuyển Prompt thành chuỗi
 func ConvertPromptToString(p Prompt) string {
 	var sb strings.Builder
 

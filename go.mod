@@ -7,6 +7,7 @@ toolchain go1.23.2
 require (
 	cloud.google.com/go/storage v1.47.0
 	firebase.google.com/go v3.13.0+incompatible
+	github.com/adrium/goheif v0.0.0-20230113233934-ca402e77a786
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v4 v4.5.1
@@ -17,6 +18,7 @@ require (
 	github.com/mvrilo/go-redoc/gin v0.0.0-20240120021923-101384bb3acd
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.29.0
+	golang.org/x/image v0.24.0
 	golang.org/x/oauth2 v0.23.0
 	google.golang.org/api v0.203.0
 	gorm.io/driver/postgres v1.5.9
@@ -74,6 +76,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
+	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.opencensus.io v0.24.0 // indirect
@@ -88,9 +91,9 @@ require (
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/arch v0.12.0 // indirect
 	golang.org/x/net v0.31.0 // indirect
-	golang.org/x/sync v0.9.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.27.0 // indirect
-	golang.org/x/text v0.20.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/time v0.7.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20241015192408-796eee8c2d53 // indirect
