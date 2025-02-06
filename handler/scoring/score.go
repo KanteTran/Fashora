@@ -42,6 +42,7 @@ type ScoreResponse struct {
 
 // Detect image format
 func detectFormat(filename string) string {
+	logger.Info("deteting format")
 	ext := strings.ToLower(filepath.Ext(filename))
 	switch ext {
 	case ".jpeg", ".jpg":
