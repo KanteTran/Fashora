@@ -129,6 +129,9 @@ func ScoreImage(c *gin.Context) {
 		utils.SendErrorResponse(c, http.StatusBadRequest, "Could not get image")
 		return
 	}
+
+	logger.Info("Image uploaded successfully")
+
 	// Open the file
 	file, err := fileHeader.Open()
 	if err != nil {
@@ -136,9 +139,10 @@ func ScoreImage(c *gin.Context) {
 		return
 	}
 	defer file.Close()
-
+	logger.Info("Image file opened")
 	imgData, imgFormat, err := prepareImage(file, fileHeader.Filename)
 	logger.Info(imgFormat)
+	logger.Infof("Image file read successfully, size: %d bytes", len(imgData))
 
 	if err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Could not read image file")
