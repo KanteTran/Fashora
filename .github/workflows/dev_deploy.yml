@@ -1,40 +1,40 @@
-name: Deploy Dev enviroment
-
-on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: write
-  packages: write # Required for publishing to GitHub Container Registry
-
-env:
-  IMAGE_NAME: fashionira
-
-jobs:
-  tag-and-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      # Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Deploy to Server
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@v0.1.5
-        with:
-          host: ${{ secrets.SERVER_DEPLOY }}
-          username: ${{ secrets.USER_DEPLOY }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            echo "Connected successfully!"
-            echo "Cloning repository..."
-            cd ${{ github.event.repository.name }}
-            echo "Making start_server.sh executable..."
-            git pull --ff-only origin main
-            chmod +x start_server.sh
-            echo "Running start_server.sh..."
-            ./start_server.sh
+#name: Deploy Dev enviroment
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#
+#permissions:
+#  contents: write
+#  packages: write # Required for publishing to GitHub Container Registry
+#
+#env:
+#  IMAGE_NAME: fashionira
+#
+#jobs:
+#  tag-and-deploy:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      # Checkout the repository
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      # Deploy to Server
+#      - name: Deploy to Server
+#        uses: appleboy/ssh-action@v0.1.5
+#        with:
+#          host: ${{ secrets.SERVER_DEPLOY }}
+#          username: ${{ secrets.USER_DEPLOY }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          port: 22
+#          script: |
+#            echo "Connected successfully!"
+#            echo "Cloning repository..."
+#            cd ${{ github.event.repository.name }}
+#            echo "Making start_server.sh executable..."
+#            git pull --ff-only origin main
+#            chmod +x start_server.sh
+#            echo "Running start_server.sh..."
+#            ./start_server.sh

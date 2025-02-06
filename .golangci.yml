@@ -2,7 +2,7 @@ run:
   tests: false
 linters-settings:
   goimports:
-    local-prefixes: jsin
+    local-prefixes: fashora
 linters:
   disable-all: true
   enable:
