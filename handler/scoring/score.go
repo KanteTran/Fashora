@@ -42,7 +42,7 @@ type ScoreResponse struct {
 
 // Detect image format
 func detectFormat(filename string) string {
-	logger.Info("deteting format")
+	logger.Info("detesting format")
 	ext := strings.ToLower(filepath.Ext(filename))
 	switch ext {
 	case ".jpeg", ".jpg":
@@ -59,15 +59,21 @@ func detectFormat(filename string) string {
 }
 
 // Convert HEIC to PNG
-func convertHEICToPNG(file multipart.File) ([]byte, error) {
+func convertHEICToPNG(file *multipart.FileHeader) ([]byte, error) {
 	// Read the HEIC file into memory
-	heicData, err := io.ReadAll(file)
+
+	fileHeader, err := file.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer fileHeader.Close()
+	imgData, err := io.ReadAll(fileHeader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read HEIC file: %v", err)
 	}
 
 	// Create an io.Reader from the byte slice
-	reader := bytes.NewReader(heicData)
+	reader := bytes.NewReader(imgData)
 
 	// Decode the HEIC image using goheif
 	img, err := goheif.Decode(reader)
@@ -87,8 +93,22 @@ func convertHEICToPNG(file multipart.File) ([]byte, error) {
 }
 
 // Convert WebP to PNG
-func convertWebPToPNG(img io.Reader) ([]byte, error) {
-	decoded, err := webp.Decode(img)
+func convertWebPToPNG(file *multipart.FileHeader) ([]byte, error) {
+
+	fileHeader, err := file.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer func(fileHeader multipart.File) {
+		err := fileHeader.Close()
+		if err != nil {
+		}
+	}(fileHeader)
+	img, err := io.ReadAll(fileHeader)
+
+	// Create an io.Reader from the byte slice
+	reader := bytes.NewReader(img)
+	decoded, err := webp.Decode(reader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode WebP image: %v", err)
 	}
@@ -103,20 +123,26 @@ func convertWebPToPNG(img io.Reader) ([]byte, error) {
 }
 
 // Prepare image: detect format & convert if needed
-func prepareImage(file multipart.File, filename string) ([]byte, string, error) {
-	format := detectFormat(filename)
+func prepareImage(fileHeader *multipart.FileHeader) ([]byte, string, error) {
+	format := detectFormat(fileHeader.Filename)
 
 	switch format {
 	case "jpeg", "png":
+		// Open the file
+		file, err := fileHeader.Open()
+		if err != nil {
+			return nil, "", err
+		}
+		defer file.Close()
 		imgData, err := io.ReadAll(file)
 		return imgData, format, err
 
 	case "heic":
-		imgData, err := convertHEICToPNG(file)
+		imgData, err := convertHEICToPNG(fileHeader)
 		return imgData, "png", err
 
 	case "webp":
-		imgData, err := convertWebPToPNG(file)
+		imgData, err := convertWebPToPNG(fileHeader)
 		return imgData, "png", err
 
 	default:
@@ -133,15 +159,7 @@ func ScoreImage(c *gin.Context) {
 
 	logger.Info("Image uploaded successfully")
 
-	// Open the file
-	file, err := fileHeader.Open()
-	if err != nil {
-		utils.SendErrorResponse(c, http.StatusInternalServerError, "Could not open image file")
-		return
-	}
-	defer file.Close()
-	logger.Info("Image file opened")
-	imgData, imgFormat, err := prepareImage(file, fileHeader.Filename)
+	imgData, imgFormat, err := prepareImage(fileHeader)
 	logger.Info(imgFormat)
 	logger.Infof("Image file read successfully, size: %d bytes", len(imgData))
 
