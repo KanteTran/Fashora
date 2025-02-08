@@ -28,7 +28,8 @@ func readFilesFromRequest(c *gin.Context, images []models.Image) (map[string]*mu
 	return files, nil
 }
 
-func uploadToGCS(ctx context.Context,
+func uploadToGCS(
+	ctx context.Context,
 	client *storage.Client,
 	fileContent io.Reader,
 	formKey,

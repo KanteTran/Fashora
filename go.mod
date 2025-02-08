@@ -14,6 +14,7 @@ require (
 	github.com/google/generative-ai-go v0.19.0
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
 	github.com/mvrilo/go-redoc v0.1.5
 	github.com/mvrilo/go-redoc/gin v0.0.0-20240120021923-101384bb3acd
 	go.uber.org/zap v1.27.0

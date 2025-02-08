@@ -3,7 +3,9 @@ package store
 import (
 	"errors"
 	"fashora-backend/database"
+	"fashora-backend/handler/tagging"
 	"fmt"
+	"github.com/lib/pq"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -97,6 +99,9 @@ func AddItem(c *gin.Context) {
 	description := c.PostForm("description")
 
 	file, err := c.FormFile("image")
+
+	tags := tagging.TagClothes(file)
+
 	if err != nil {
 		utils.SendErrorResponse(c, http.StatusBadRequest, "Could not get image")
 		return
@@ -134,6 +139,7 @@ func AddItem(c *gin.Context) {
 		URL:         url,
 		ImageURL:    imageUrl,
 		Description: description,
+		Tags:        pq.Int64Array(tags[:]),
 	}
 
 	if err := database.GetDBInstance().DB().Create(&item).Error; err != nil {
