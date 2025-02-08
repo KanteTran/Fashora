@@ -157,6 +157,7 @@ func ScoreImage(c *gin.Context) {
 		return
 	}
 
+	logger.Info("Image uploaded successfully")
 	imgData, imgFormat, err := prepareImage(fileHeader)
 	logger.Infof("Image file read successfully, size: %d bytes", len(imgData))
 
