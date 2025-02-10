@@ -4,6 +4,7 @@ type PromptConfig struct {
 	PromptFileName   string
 	OutfitEvalPrompt string
 	TagClothes       string
+	RecommendTags    string
 }
 
 func loadPromptConfig() PromptConfig {
@@ -11,5 +12,6 @@ func loadPromptConfig() PromptConfig {
 		PromptFileName:   GetEnv("FILE_PROMPT", ""),
 		OutfitEvalPrompt: GetEnv("OUTFIT_EVALUATION", ""),
 		TagClothes:       GetEnv("TAG_CLOTHES", ""),
+		RecommendTags:    GetEnv("RECOMMEND_PROMPT", ""),
 	}
 }

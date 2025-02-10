@@ -19,6 +19,11 @@ type RegisterInput struct {
 	Address     *string    `json:"address"`
 	DeviceID    *string    `json:"device_id"`
 	Gender      *int       `json:"gender"` // 0: male, 1: female, 2: other
+
+	// New fields
+	Height   *float64 `json:"height"`    // Chiều cao (đơn vị: cm)
+	Weight   *float64 `json:"weight"`    // Cân nặng (đơn vị: kg)
+	SkinTone *string  `json:"skin_tone"` // Màu da (ví dụ: light, medium, dark)
 }
 
 func Register(c *gin.Context) {

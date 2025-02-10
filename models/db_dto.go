@@ -18,8 +18,13 @@ type Users struct {
 	Address      *string    `gorm:"size:255"`
 	DeviceID     *string    `gorm:"size:100"`
 	Gender       *int       `gorm:"check:gender IN (0, 1, 2)"` // Gender: 0 (male), 1 (female), 2 (other), optional
-	CreatedAt    time.Time  `gorm:"autoCreateTime"`
-	UpdatedAt    time.Time  `gorm:"autoUpdateTime"`
+	// Thêm các trường mới
+	Height   *float64 `gorm:"type:decimal(5,2)"` // Chiều cao (đơn vị: cm)
+	Weight   *float64 `gorm:"type:decimal(5,2)"` // Cân nặng (đơn vị: kg)
+	SkinTone *string  `gorm:"size:50;check:skin_tone IN ('light', 'medium', 'dark')"`
+
+	CreatedAt time.Time `gorm:"autoCreateTime"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
 
 type Inventory struct {
@@ -50,6 +55,11 @@ type UserInfo struct {
 	Address     *string
 	DeviceID    *string
 	Gender      *int
+
+	// New fields
+	Height   *float64 // Chiều cao (đơn vị: cm)
+	Weight   *float64 // Cân nặng (đơn vị: kg)
+	SkinTone *string  // Màu da (ví dụ: light, medium, dark)
 }
 
 type Response struct {
