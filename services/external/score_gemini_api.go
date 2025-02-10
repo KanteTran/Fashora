@@ -53,6 +53,28 @@ func (app *GeminiApp) GeminiFashionScore(imgFormat string, imgData []byte, promp
 	return printResponse(resp), nil
 }
 
+// GeminiFashionScore Send an image to Gemini and get fashion scoring
+func (app *GeminiApp) GeminiFashionTags(prompt string) (string, error) {
+	// Set up the generative model with a custom temperature
+	model := app.client.GenerativeModel(config.AppConfig.Model.GeminiModelName)
+	temp := float32(0.8)
+	model.Temperature = &temp
+
+	// Create the input data for the model (image and prompt)
+	data := []genai.Part{
+		genai.Text(prompt),
+	}
+
+	resp, err := model.GenerateContent(app.ctx, data...)
+	if err != nil {
+		logger.Errorf("Error during processing: %s", err)
+		return "", err
+	}
+
+	// Extract and return the response
+	return printResponse(resp), nil
+}
+
 // Print the response from Gemini
 func printResponse(resp *genai.GenerateContentResponse) string {
 	var result string

@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fashora-backend/logger"
+	//"fashora-backend/models"
+
+	//"fashora-backend/models"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -83,6 +86,32 @@ func ConvertPromptToString(p Prompt) string {
 	for key, value := range p.Context {
 		sb.WriteString(fmt.Sprintf("- %s: %v\n", key, value))
 	}
+	for _, criterion := range p.Criteria {
+		sb.WriteString("- " + criterion.Description + "\n")
+	}
+	for _, response := range p.Responses {
+		sb.WriteString(response.Description + "\n")
+	}
+
+	return sb.String()
+}
+
+func ConvertPromptToString_Recommend(p Prompt,
+	userProfile string, useCase string) string {
+	var sb strings.Builder
+
+	sb.WriteString(p.Prompt)
+	for key, value := range p.Context {
+		sb.WriteString(fmt.Sprintf("- %s: %v\n", key, value))
+	}
+	sb.WriteString(fmt.Sprintf("- %s: %s\n", "Thông tin user bao gồm như sau:\n", userProfile))
+	//sb.WriteString(fmt.Sprintf("- %s: %v\n", "Sinh năm", Birthday))
+	//sb.WriteString(fmt.Sprintf("- %s: %v\n", "Chiều cao(cm)", Height))
+	//sb.WriteString(fmt.Sprintf("- %s: %v\n", "Cân nặng(kg)", Weight))
+	//sb.WriteString(fmt.Sprintf("- %s: %v\n", "Màu da", SkinTone))
+	//sb.WriteString(fmt.Sprintf("- %s: %v\n", "Giới tính(0: male, 1: female, 2: other)", Gender))
+	sb.WriteString(fmt.Sprintf("- %s: %v\n", "Mục đích sử dụng", useCase))
+
 	for _, criterion := range p.Criteria {
 		sb.WriteString("- " + criterion.Description + "\n")
 	}

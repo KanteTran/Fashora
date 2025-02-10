@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fashora-backend/handler/recommend"
 	"github.com/gin-gonic/gin"
 
 	"fashora-backend/handler/auth"
@@ -23,11 +24,12 @@ func SetupPublicRoutes(r *gin.Engine) {
 	r.POST("/stores/create-store", store.CreateStore)
 	r.GET("/stores/add-item", store.AddItemPage)
 	r.POST("/stores/add-item", store.AddItem)
-
+	r.POST("/stores/get-items-by-tags", recommend.GetItemsByTags)
 	// Score APIs
 	r.POST("/image/scoring", scoring.ScoreImage)
 	//r.POST("image/tag", tagging.TagImage)
-
+	// Recommend API
+	r.POST("/recommend/gen_tags", recommend.GenTagRecommend)
 	// Get version
 	r.GET("/version", external.Version)
 
