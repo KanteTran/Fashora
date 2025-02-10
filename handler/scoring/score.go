@@ -42,7 +42,7 @@ type ScoreResponse struct {
 
 // Detect image format
 func detectFormat(filename string) string {
-	logger.Info("detesting format")
+	logger.Info("detecting format")
 	ext := strings.ToLower(filepath.Ext(filename))
 	switch ext {
 	case ".jpeg", ".jpg":
@@ -123,7 +123,7 @@ func convertWebPToPNG(file *multipart.FileHeader) ([]byte, error) {
 }
 
 // Prepare image: detect format & convert if needed
-func prepareImage(fileHeader *multipart.FileHeader) ([]byte, string, error) {
+func PrepareImage(fileHeader *multipart.FileHeader) ([]byte, string, error) {
 	format := detectFormat(fileHeader.Filename)
 
 	switch format {
@@ -158,13 +158,14 @@ func ScoreImage(c *gin.Context) {
 	}
 
 	logger.Info("Image uploaded successfully")
-	imgData, imgFormat, err := prepareImage(fileHeader)
-	logger.Infof("Image file read successfully, size: %d bytes", len(imgData))
+	imgData, imgFormat, err := PrepareImage(fileHeader)
+	logger.Infof("Image file read successfully, si	ze: %d bytes", len(imgData))
 
 	if err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Could not read image file")
 		return
 	}
+
 	GeminiApp := external.InitGemini(config.AppConfig.Model.GeminiAPI)
 	outfitEvalPrompt, _ := models.PromptLoader.GetPrompt(config.AppConfig.Prompt.OutfitEvalPrompt)
 	rawJSON, _ := GeminiApp.GeminiFashionScore(imgFormat, imgData, prompt.ConvertPromptToString(outfitEvalPrompt))

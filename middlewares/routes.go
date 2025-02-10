@@ -26,6 +26,7 @@ func SetupPublicRoutes(r *gin.Engine) {
 
 	// Score APIs
 	r.POST("/image/scoring", scoring.ScoreImage)
+	//r.POST("image/tag", tagging.TagImage)
 
 	// Get version
 	r.GET("/version", external.Version)

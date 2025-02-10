@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
+
 	"gorm.io/gorm"
 )
 
@@ -77,12 +79,13 @@ func (u *Stores) BeforeCreate(*gorm.DB) (err error) {
 }
 
 type Item struct {
-	ID          int    `json:"id" gorm:"primaryKey;autoIncrement"`
-	StoreID     string `json:"store_id" gorm:"not null"`
-	Name        string `json:"name" gorm:"not null"`
-	URL         string `json:"url"`
-	ImageURL    string `json:"image" `
-	Description string `json:"description"`
+	ID          int           `json:"id" gorm:"primaryKey;autoIncrement"`
+	StoreID     string        `json:"store_id" gorm:"not null"`
+	Name        string        `json:"name" gorm:"not null"`
+	URL         string        `json:"url"`
+	ImageURL    string        `json:"image" `
+	Description string        `json:"description"`
+	Tags        pq.Int64Array `json:"tags" gorm:"type:integer[]"` // Dùng pq.Int64Array để lưu mảng int
 }
 
 type ImageRequest struct {
