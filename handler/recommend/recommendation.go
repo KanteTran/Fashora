@@ -3,6 +3,7 @@ package recommend
 import (
 	"encoding/json"
 	"fashora-backend/config"
+	"fashora-backend/logger"
 	"fashora-backend/models"
 	"fashora-backend/services/external"
 	"fashora-backend/services/prompt"
@@ -48,6 +49,7 @@ func GenTagRecommend(c *gin.Context) {
 	cleanedJSON := strings.TrimPrefix(rawJSON, "```json\n")
 	cleanedJSON = strings.TrimSuffix(cleanedJSON, "```\n")
 
+	logger.Info(cleanedJSON)
 	var recommendation FashionRecommendation
 	err := json.Unmarshal([]byte(cleanedJSON), &recommendation)
 	if err != nil {
