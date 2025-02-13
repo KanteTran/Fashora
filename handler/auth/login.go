@@ -28,11 +28,10 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	responseData := map[string]interface{}{
+	utils.SendSuccessResponse(c, http.StatusOK, "Login successful", map[string]any{
 		"token": userWithToken.Token,
 		"user":  userWithToken.User,
-	}
-	utils.SendSuccessResponse(c, http.StatusOK, "Login successful", responseData)
+	})
 }
 
 // handleLoginError handles login-specific errors

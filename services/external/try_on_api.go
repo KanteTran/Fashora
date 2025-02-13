@@ -109,7 +109,7 @@ func processAPIResponse(c *gin.Context, resp *http.Response) {
 		return
 	}
 
-	var responseJSON map[string]interface{}
+	var responseJSON map[string]any
 	err = json.Unmarshal(body, &responseJSON)
 	if err != nil {
 		utils.SendErrorResponse(nil, http.StatusInternalServerError,

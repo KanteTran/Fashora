@@ -13,10 +13,10 @@ import (
 
 // Prompt Define the structure for each prompt
 type Prompt struct {
-	Prompt    string                 `json:"prompt"`
-	Criteria  []Criterion            `json:"criteria"`
-	Context   map[string]interface{} `json:"context"`
-	Responses []Response             `json:"responses"`
+	Prompt    string         `json:"prompt"`
+	Criteria  []Criterion    `json:"criteria"`
+	Context   map[string]any `json:"context"`
+	Responses []Response     `json:"responses"`
 }
 
 type Criterion struct {

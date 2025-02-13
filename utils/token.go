@@ -29,7 +29,7 @@ func GenerateJWT(phoneID string) (string, error) {
 }
 
 func VerifyJWT(tokenString string) (*models.Users, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (any, error) {
 		return jwtKey, nil
 	})
 	if err != nil {

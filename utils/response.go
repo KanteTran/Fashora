@@ -15,7 +15,7 @@ func SendErrorResponse(c *gin.Context, statusCode int, message string) {
 	})
 }
 
-func SendSuccessResponse(c *gin.Context, statusCode int, message string, data interface{}) {
+func SendSuccessResponse(c *gin.Context, statusCode int, message string, data any) {
 	c.JSON(statusCode, models.Response{
 		Success: true,
 		Status:  statusCode,

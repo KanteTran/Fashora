@@ -59,7 +59,7 @@ func CreateNewUser(userInfo models.UserInfo) (*models.Users, error) {
 }
 
 func UpdateUserByPhoneNumber(userInfoUpdate models.UserInfo) error {
-	updateFields := map[string]interface{}{}
+	updateFields := map[string]any{}
 
 	if userInfoUpdate.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInfoUpdate.Password), bcrypt.DefaultCost)

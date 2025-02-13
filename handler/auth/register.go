@@ -47,9 +47,8 @@ func Register(c *gin.Context) {
 		utils.SendErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
 
-	responseData := map[string]interface{}{
+	utils.SendSuccessResponse(c, http.StatusCreated, "User created successfully", map[string]any{
 		"token": userWithToken.Token,
 		"user":  userWithToken.User,
-	}
-	utils.SendSuccessResponse(c, http.StatusCreated, "User created successfully", responseData)
+	})
 }

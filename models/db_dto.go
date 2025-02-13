@@ -63,10 +63,10 @@ type UserInfo struct {
 }
 
 type Response struct {
-	Success bool        `json:"success"`
-	Status  int         `json:"status"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
+	Success bool   `json:"success"`
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+	Data    any    `json:"data,omitempty"`
 }
 
 type Stores struct {
