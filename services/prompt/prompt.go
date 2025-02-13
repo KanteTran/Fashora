@@ -3,14 +3,12 @@ package prompt
 import (
 	"encoding/json"
 	"errors"
-	"fashora-backend/logger"
-	//"fashora-backend/models"
-
-	//"fashora-backend/models"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"fashora-backend/logger"
 )
 
 // Prompt Define the structure for each prompt

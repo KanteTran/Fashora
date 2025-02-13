@@ -1,11 +1,11 @@
 package middlewares
 
 import (
-	"fashora-backend/handler/recommend"
 	"github.com/gin-gonic/gin"
 
 	"fashora-backend/handler/auth"
 	"fashora-backend/handler/inventory"
+	"fashora-backend/handler/recommend"
 	"fashora-backend/handler/scoring"
 	"fashora-backend/handler/store"
 	"fashora-backend/handler/try_on"

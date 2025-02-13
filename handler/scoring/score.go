@@ -3,16 +3,9 @@ package scoring
 import (
 	"bytes"
 	"encoding/json"
-	"fashora-backend/config"
-	"fashora-backend/logger"
-	"fashora-backend/models"
-	"fashora-backend/services/external"
-	"fashora-backend/services/prompt"
-	"fashora-backend/utils"
 	"fmt"
-	"golang.org/x/image/webp"
 	"image/png"
-	"log"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
@@ -20,9 +13,15 @@ import (
 
 	"github.com/adrium/goheif"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/image/webp"
 	_ "golang.org/x/image/webp"
 
-	"io"
+	"fashora-backend/config"
+	"fashora-backend/logger"
+	"fashora-backend/models"
+	"fashora-backend/services/external"
+	"fashora-backend/services/prompt"
+	"fashora-backend/utils"
 )
 
 type ScoreResponse struct {
@@ -104,7 +103,7 @@ func convertWebPToPNG(file *multipart.FileHeader) ([]byte, error) {
 		if err != nil {
 		}
 	}(fileHeader)
-	img, err := io.ReadAll(fileHeader)
+	img, _ := io.ReadAll(fileHeader)
 
 	// Create an io.Reader from the byte slice
 	reader := bytes.NewReader(img)
@@ -157,7 +156,6 @@ func ScoreImage(c *gin.Context) {
 		return
 	}
 
-	logger.Info("Image uploaded successfully")
 	imgData, imgFormat, err := PrepareImage(fileHeader)
 	logger.Infof("Image file read successfully, si	ze: %d bytes", len(imgData))
 
@@ -178,9 +176,9 @@ func ScoreImage(c *gin.Context) {
 	var evaluation ScoreResponse
 	err = json.Unmarshal([]byte(cleanedJSON), &evaluation)
 	if err != nil {
-		log.Fatalf("Error when parse JSON: %v", err)
+		logger.Errorf("Error when parse JSON: %v", err)
+		utils.SendErrorResponse(c, http.StatusInternalServerError, rawJSON)
+	} else {
+		utils.SendSuccessResponse(c, http.StatusOK, "Evaluated complete", evaluation)
 	}
-
-	utils.SendSuccessResponse(c, http.StatusOK, "Evaluated complete", evaluation)
-
 }

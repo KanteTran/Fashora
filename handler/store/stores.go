@@ -2,16 +2,16 @@ package store
 
 import (
 	"errors"
-	"fashora-backend/database"
-	"fashora-backend/handler/tagging"
 	"fmt"
-	"github.com/lib/pq"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 
 	"fashora-backend/config"
+	"fashora-backend/database"
+	"fashora-backend/handler/tagging"
 	"fashora-backend/models"
 	"fashora-backend/services/external"
 	"fashora-backend/utils"

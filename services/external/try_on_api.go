@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fashora-backend/logger"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -15,6 +14,7 @@ import (
 	"golang.org/x/oauth2/google"
 
 	"fashora-backend/config"
+	"fashora-backend/logger"
 	"fashora-backend/utils"
 )
 

@@ -2,16 +2,18 @@ package recommend
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+
 	"fashora-backend/config"
 	"fashora-backend/logger"
 	"fashora-backend/models"
 	"fashora-backend/services/external"
 	"fashora-backend/services/prompt"
 	"fashora-backend/utils"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"strings"
 )
 
 type FashionRecommendation struct {
@@ -53,10 +55,10 @@ func GenTagRecommend(c *gin.Context) {
 	var recommendation FashionRecommendation
 	err := json.Unmarshal([]byte(cleanedJSON), &recommendation)
 	if err != nil {
-		fmt.Println("Lỗi khi parse JSON:", err)
-		return
+		log.Fatalf("Error when parse JSON: %v", err)
+		utils.SendErrorResponse(c, http.StatusInternalServerError, rawJSON)
+	} else {
+		utils.SendSuccessResponse(c, http.StatusOK, "Evaluated complete", recommendation)
 	}
-
-	utils.SendSuccessResponse(c, http.StatusOK, "Evaluated complete", recommendation)
 
 }

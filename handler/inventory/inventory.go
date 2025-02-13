@@ -2,13 +2,13 @@ package inventory
 
 import (
 	"errors"
-	"fashora-backend/database"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
+	"fashora-backend/database"
 	"fashora-backend/models"
 	"fashora-backend/services/auth_service"
 	"fashora-backend/utils"

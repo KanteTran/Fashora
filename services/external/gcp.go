@@ -3,18 +3,18 @@ package external
 import (
 	"context"
 	"errors"
-	"fashora-backend/logger"
 	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
 	"strings"
 
+	"fashora-backend/config"
+	"fashora-backend/logger"
+
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-
-	"fashora-backend/config"
 )
 
 func CreateFoldersIfNotExists(bucketName string, folderPath string) error {

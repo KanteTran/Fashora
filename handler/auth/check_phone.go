@@ -2,12 +2,12 @@ package auth
 
 import (
 	"errors"
-	"fashora-backend/database"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
+	"fashora-backend/database"
 	"fashora-backend/models"
 	"fashora-backend/utils"
 )

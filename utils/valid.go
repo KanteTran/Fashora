@@ -2,9 +2,10 @@ package utils
 
 import (
 	"context"
-	"fashora-backend/services/user_service"
 	"regexp"
 	"strings"
+
+	"fashora-backend/services/user_service"
 )
 
 func ValidatePhoneNumber(phone string) bool {

@@ -1,11 +1,11 @@
 package external
 
 import (
-	"fashora-backend/database"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
+	"fashora-backend/database"
 	"fashora-backend/models"
 	"fashora-backend/utils"
 )

@@ -3,13 +3,13 @@ package user_service
 import (
 	"context"
 	"errors"
-	"fashora-backend/database"
-	"fashora-backend/logger"
 	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/api/iterator"
 
+	"fashora-backend/database"
+	"fashora-backend/logger"
 	"fashora-backend/models"
 )
 
