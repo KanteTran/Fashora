@@ -14,7 +14,6 @@ import (
 	"github.com/adrium/goheif"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/image/webp"
-	_ "golang.org/x/image/webp"
 
 	"fashora-backend/config"
 	"fashora-backend/logger"
@@ -57,7 +56,6 @@ func detectFormat(filename string) string {
 	}
 }
 
-// Convert HEIC to PNG
 func convertHEICToPNG(file *multipart.FileHeader) ([]byte, error) {
 	// Read the HEIC file into memory
 
@@ -91,7 +89,6 @@ func convertHEICToPNG(file *multipart.FileHeader) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// Convert WebP to PNG
 func convertWebPToPNG(file *multipart.FileHeader) ([]byte, error) {
 
 	fileHeader, err := file.Open()

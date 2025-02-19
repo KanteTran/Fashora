@@ -17,7 +17,6 @@ type GetItemsByTagsRequest struct {
 func GetItemsByTags(c *gin.Context) {
 	var req GetItemsByTagsRequest
 
-	// Parse JSON input từ request body
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
 		return
@@ -29,7 +28,7 @@ func GetItemsByTags(c *gin.Context) {
 	}
 
 	var items []models.Item
-	err := database.GetDBInstance().DB().Where("tags && ?", pq.Array(req.Tags)).Find(&items).Error
+	err := database.GetDBInstance().DB().Where("tags @> ?", pq.Array(req.Tags)).Find(&items).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
 		return
