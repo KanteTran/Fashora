@@ -32,6 +32,7 @@ func SetupPublicRoutes(r *gin.Engine) {
 	r.POST("/try_on/segment", try_on.Segment)
 	r.POST("/image/scoring", scoring.ScoreImage)
 	r.POST("/recommend/gen_tags", recommend.GenTagRecommend)
+	r.POST("/try_on/push", try_on.UploadImages)
 	// Get version
 	r.GET("/version", external.Version)
 
@@ -43,7 +44,7 @@ func SetupProtectedRoutes(r *gin.Engine) {
 	{
 		// Auth APIs requiring authentication
 		protected.POST("/auth/update", auth.Update)
-		protected.POST("/try_on/push", try_on.UploadImages)
+		//protected.POST("/try_on/push", try_on.UploadImages)
 		protected.POST("/inventory/add-item", inventory.AddInventory)
 		protected.GET("/inventory/all-items", inventory.ListInventories)
 		protected.DELETE("/inventory/del-item", inventory.DeleteInventory)
