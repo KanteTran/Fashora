@@ -25,11 +25,6 @@ func SetupPublicRoutes(r *gin.Engine) {
 	r.GET("/stores/add-item", store.AddItemPage)
 	r.POST("/stores/add-item", store.AddItem)
 	r.POST("/stores/get-items-by-tags", recommend.GetItemsByTags)
-	// Score APIs
-	r.POST("/image/scoring", scoring.ScoreImage)
-	//r.POST("image/tag", tagging.TagImage)
-	// Recommend API
-	r.POST("/recommend/gen_tags", recommend.GenTagRecommend)
 	// Get version
 	r.GET("/version", external.Version)
 
@@ -49,7 +44,8 @@ func SetupProtectedRoutes(r *gin.Engine) {
 		protected.GET("/stores/get_all_items_store", store.GetStoreItemsById)
 		protected.GET("/stores/get_only_items", store.GetItemsById)
 		protected.POST("/try_on/segment", try_on.Segment)
-
+		protected.POST("/image/scoring", scoring.ScoreImage)
+		r.POST("/recommend/gen_tags", recommend.GenTagRecommend)
 		// Add more authenticated routes here if needed
 	}
 }
