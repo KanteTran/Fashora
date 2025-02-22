@@ -2,7 +2,7 @@ package recommend
 
 import (
 	"encoding/json"
-	"log"
+	"fashora-backend/logger"
 	"net/http"
 	"strings"
 
@@ -53,7 +53,7 @@ func GenTagRecommend(c *gin.Context) {
 	var recommendation FashionRecommendation
 	err := json.Unmarshal([]byte(cleanedJSON), &recommendation)
 	if err != nil {
-		log.Fatalf("Error when parse JSON: %v", err)
+		logger.Errorf("Error when parse JSON: %v", err)
 		utils.SendErrorResponse(c, http.StatusInternalServerError, rawJSON)
 	} else {
 		utils.SendSuccessResponse(c, http.StatusOK, "Evaluated complete", recommendation)
