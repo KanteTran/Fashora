@@ -48,7 +48,8 @@ func Register(c *gin.Context) {
 	}
 
 	utils.SendSuccessResponse(c, http.StatusCreated, "User created successfully", map[string]any{
-		"token": userWithToken.Token,
-		"user":  userWithToken.User,
+		"accessToken":  userWithToken.AccessToken,
+		"refreshToken": userWithToken.RefreshToken,
+		"user":         userWithToken.User,
 	})
 }

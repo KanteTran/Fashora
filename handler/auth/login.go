@@ -29,8 +29,9 @@ func Login(c *gin.Context) {
 	}
 
 	utils.SendSuccessResponse(c, http.StatusOK, "Login successful", map[string]any{
-		"token": userWithToken.Token,
-		"user":  userWithToken.User,
+		"accessToken":  userWithToken.AccessToken,
+		"refreshToken": userWithToken.RefreshToken,
+		"user":         userWithToken.User,
 	})
 }
 

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -15,43 +16,68 @@ import (
 
 var jwtKey = []byte(config.AppConfig.JWT.Secret)
 
-func GenerateJWT(phoneID string) (string, error) {
-	expiredTime, _ := strconv.Atoi(config.AppConfig.JWT.ExpirationHours)
+func GenerateJWT(phoneID string) (accessToken string, refreshToken string, err error) {
+	accessTokenExpiredTime, _ := strconv.Atoi(config.AppConfig.JWT.AccessTokenExpiration)
+	refreshTokenExpiredTime, _ := strconv.Atoi(config.AppConfig.JWT.RefreshTokenExpiration)
 
-	claims := &jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiredTime) * time.Hour)),
+	accessClaims := &jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(accessTokenExpiredTime) * time.Minute)),
 		Issuer:    "fashora-backend",
 		Subject:   phoneID,
 	}
+	accessTokenObj := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
+	accessToken, err = accessTokenObj.SignedString(jwtKey)
+	if err != nil {
+		return "", "", err
+	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtKey)
+	refreshClaims := &jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(refreshTokenExpiredTime) * time.Hour)),
+		Issuer:    "fashora-backend",
+		Subject:   phoneID,
+	}
+	refreshTokenObj := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
+	refreshToken, err = refreshTokenObj.SignedString(jwtKey)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
 }
 
+// VerifyJWT kiểm tra JWT Token và trả về thông tin user
 func VerifyJWT(tokenString string) (*models.Users, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (any, error) {
 		return jwtKey, nil
 	})
+
+	// Kiểm tra lỗi parse token
 	if err != nil {
-		return nil, err
+		var validationErr *jwt.ValidationError
+		if errors.As(err, &validationErr) {
+			// Trả về lỗi rõ ràng nếu token đã hết hạn
+			if validationErr.Errors&jwt.ValidationErrorExpired != 0 {
+				return nil, fmt.Errorf("token expired")
+			}
+			return nil, fmt.Errorf("invalid token: %v", err)
+		}
+		return nil, fmt.Errorf("could not parse token: %v", err)
 	}
 
-	if claims, ok := token.Claims.(*jwt.RegisteredClaims); ok && token.Valid {
-		if time.Now().After(claims.ExpiresAt.Time) {
-			return nil, jwt.NewValidationError("Token expired", jwt.ValidationErrorExpired)
-		}
+	// Kiểm tra claims hợp lệ
+	claims, ok := token.Claims.(*jwt.RegisteredClaims)
+	if !ok || !token.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
 
-		user, err := user_service.GetUserByPhoneNumber(claims.Subject)
-		if user != nil {
-			return user, nil
-		}
-
+	// Tìm user bằng phoneID (claims.Subject)
+	user, err := user_service.GetUserByPhoneNumber(claims.Subject)
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, jwt.NewValidationError("Invalid token", jwt.ValidationErrorMalformed)
+			return nil, fmt.Errorf("user not found")
 		}
-
-		return nil, err
+		return nil, fmt.Errorf("database error: %v", err)
 	}
 
-	return nil, jwt.NewValidationError("Invalid token", jwt.ValidationErrorMalformed)
+	return user, nil
 }
