@@ -17,7 +17,26 @@ import (
 	"fashora-backend/utils"
 )
 
-func CreateStore(c *gin.Context) {
+type ImplHandlerStore interface {
+	CreateStore(c *gin.Context)
+	AddItemPage(c *gin.Context)
+	AddItem(c *gin.Context)
+	ListStores(c *gin.Context)
+	GetStoreItemsById(c *gin.Context)
+	GetItemsById(c *gin.Context)
+}
+
+type HandlerStore struct {
+	db database.DBAdapter
+}
+
+func NewHandlerStore() ImplHandlerStore {
+	return &HandlerStore{
+		db: database.GetDBInstance(),
+	}
+}
+
+func (h *HandlerStore) CreateStore(c *gin.Context) {
 	phone := c.PostForm("phone")
 	storeName := c.PostForm("store_name")
 	address := c.PostForm("address")
@@ -30,7 +49,7 @@ func CreateStore(c *gin.Context) {
 		return
 	}
 
-	tx := database.GetDBInstance().DB().Begin()
+	tx := h.db.DB().Begin()
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to start transaction"})
 		return
@@ -45,7 +64,7 @@ func CreateStore(c *gin.Context) {
 		Type:        typeStore,
 	}
 
-	if err := database.GetDBInstance().DB().Create(&store).Error; err != nil {
+	if err := h.db.DB().Create(&store).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create store"})
 		return
 	}
@@ -80,9 +99,9 @@ func CreateStore(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/stores")
 }
 
-func AddItemPage(c *gin.Context) {
+func (h *HandlerStore) AddItemPage(c *gin.Context) {
 	var stores []models.Stores
-	if err := database.GetDBInstance().DB().Find(&stores).Error; err != nil {
+	if err := h.db.DB().Find(&stores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch stores"})
 		return
 	}
@@ -92,7 +111,7 @@ func AddItemPage(c *gin.Context) {
 	})
 }
 
-func AddItem(c *gin.Context) {
+func (h *HandlerStore) AddItem(c *gin.Context) {
 	storeID := c.PostForm("store_id")
 	name := c.PostForm("name")
 	url := c.PostForm("url")
@@ -108,7 +127,7 @@ func AddItem(c *gin.Context) {
 	}
 
 	var store models.Stores
-	err = database.GetDBInstance().DB().Where("id = ?", storeID).First(&store).Error
+	err = h.db.DB().Where("id = ?", storeID).First(&store).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			utils.SendErrorResponse(c, http.StatusBadRequest, "Store does not exist")
@@ -142,7 +161,7 @@ func AddItem(c *gin.Context) {
 		Tags:        pq.Int64Array(tags[:]),
 	}
 
-	if err := database.GetDBInstance().DB().Create(&item).Error; err != nil {
+	if err := h.db.DB().Create(&item).Error; err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Could not add item to store")
 		return
 	}
@@ -151,12 +170,12 @@ func AddItem(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/stores/add-item?success=true")
 }
 
-func ListStores(c *gin.Context) {
+func (h *HandlerStore) ListStores(c *gin.Context) {
 	var stores []models.Stores
 
 	storeType := c.Query("type")
 
-	query := database.GetDBInstance().DB()
+	query := h.db.DB()
 	if storeType != "" {
 		query = query.Where("type = ?", storeType)
 	}
@@ -169,11 +188,11 @@ func ListStores(c *gin.Context) {
 	utils.SendSuccessResponse(c, http.StatusOK, "Stores fetched successfully", stores)
 }
 
-func GetStoreItemsById(c *gin.Context) {
+func (h *HandlerStore) GetStoreItemsById(c *gin.Context) {
 	storeID := c.Query("id")
 
 	var store models.Stores
-	if err := database.GetDBInstance().DB().Where("Id = ?", storeID).First(&store).Error; err != nil {
+	if err := h.db.DB().Where("Id = ?", storeID).First(&store).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			utils.SendErrorResponse(c, http.StatusNotFound, fmt.Sprintf("Store with ID %s not found", storeID))
 			return
@@ -185,7 +204,7 @@ func GetStoreItemsById(c *gin.Context) {
 	}
 
 	var items []models.Item
-	if err := database.GetDBInstance().DB().Where("store_id = ?", storeID).Find(&items).Error; err != nil {
+	if err := h.db.DB().Where("store_id = ?", storeID).Find(&items).Error; err != nil {
 		utils.SendErrorResponse(c, http.StatusInternalServerError, "Failed to fetch items for the store")
 		return
 	}
@@ -205,7 +224,7 @@ func GetStoreItemsById(c *gin.Context) {
 		})
 }
 
-func GetItemsById(c *gin.Context) {
+func (h *HandlerStore) GetItemsById(c *gin.Context) {
 	itemID := c.Query("id")
 
 	if itemID == "" {
@@ -214,7 +233,7 @@ func GetItemsById(c *gin.Context) {
 	}
 
 	var item models.Item
-	if err := database.GetDBInstance().DB().Where("id = ?", itemID).First(&item).Error; err != nil {
+	if err := h.db.DB().Where("id = ?", itemID).First(&item).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			utils.SendErrorResponse(c, http.StatusNotFound, fmt.Sprintf("Item with ID %s not found", itemID))
 			return
